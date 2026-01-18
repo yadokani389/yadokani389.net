@@ -1,0 +1,13 @@
+name = "yadokani389-net"
+compatibility_date = "2026-01-20"
+
+[assets]
+directory = "./dist"
+
+[env.prod]
+name = "yadokani389-net"
+
+routes = [
+  { pattern = "yadokani389.net", custom_domain = true },
+  { pattern = "www.yadokani389.net", custom_domain = true }
+]

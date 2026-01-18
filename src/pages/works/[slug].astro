@@ -1,0 +1,51 @@
+---
+import { getCollection, getEntry, render } from "astro:content";
+import TagList from "../../components/TagList.svelte";
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+  const works = await getCollection("works");
+  return works.map((work) => ({ params: { slug: work.id } }));
+}
+
+const { slug } = Astro.params;
+const work = await getEntry("works", slug);
+if (!work) {
+  throw new Error(`Work not found: ${slug}`);
+}
+const { Content } = await render(work);
+---
+
+<Layout title={work.data.title} description={work.data.description}>
+  <div class="container">
+    <h1 class="page-title">{work.data.title}</h1>
+    <p class="page-lede">{work.data.description}</p>
+
+    {
+      work.data.tags && (
+        <div class="section section-tight">
+          <TagList tags={work.data.tags} basePath="/works" />
+        </div>
+      )
+    }
+
+    {
+      work.data.external_url && (
+        <div class="section section-tight">
+          <a
+            class="button primary"
+            href={work.data.external_url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open
+          </a>
+        </div>
+      )
+    }
+
+    <div class="section prose">
+      <Content />
+    </div>
+  </div>
+</Layout>

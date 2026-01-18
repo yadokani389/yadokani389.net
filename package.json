@@ -1,0 +1,25 @@
+{
+  "name": "yadokani389-net",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "format": "prettier --write .",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.13",
+    "@astrojs/svelte": "^7.2.5",
+    "astro": "^6.0.0-beta.1",
+    "svelte": "^5.46.4",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.6",
+    "prettier": "^3.8.0",
+    "prettier-plugin-astro": "^0.14.1"
+  }
+}

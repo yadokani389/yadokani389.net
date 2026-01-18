@@ -1,0 +1,52 @@
+---
+import { getCollection } from "astro:content";
+import TagFilterScript from "../../components/TagFilterScript.astro";
+import TagList from "../../components/TagList.svelte";
+import Layout from "../../layouts/Layout.astro";
+import { formatDate } from "../../utils/formatDate";
+
+const posts = (await getCollection("blog"))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<Layout title="Blog" description="日々の記録や開発メモ">
+  <div class="container">
+    <h1 class="page-title">Blog</h1>
+
+    <div class="filter-banner" data-filter-banner>
+      <div class="filter-info">
+        <span>タグ:</span>
+        <strong data-filter-label></strong>
+      </div>
+      <a class="filter-clear" href="/blog">解除</a>
+    </div>
+
+    <div class="list-stack">
+      {
+        posts.map((post) => (
+          <article
+            class="card"
+            data-card-link
+            data-href={`/blog/${post.id}`}
+            data-tags={post.data.tags?.join(",")}
+            role="link"
+            tabindex="0"
+            aria-label={`${post.data.title} の記事へ移動`}
+          >
+            <div class="card-meta">
+              <span>{formatDate(post.data.date)}</span>
+            </div>
+            <div>
+              <h2 class="card-title">{post.data.title}</h2>
+              <p class="card-description">{post.data.description}</p>
+            </div>
+            <TagList tags={post.data.tags} basePath="/blog" />
+          </article>
+        ))
+      }
+    </div>
+  </div>
+
+  <TagFilterScript />
+</Layout>

@@ -23,11 +23,11 @@ jobs:
       - uses: cachix/install-nix-action@v31
 
       - name: Restore and save Nix store
-        uses: nix-community/cache-nix-action@v6
+        uses: nix-community/cache-nix-action@v7
         with:
-          primary-key: nix-${{ runner.os }}-${{ github.job }}
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
           restore-prefixes-first-match: nix-${{ runner.os }}
-          gc-max-store-size-linux: 8G
+          gc-max-store-size-linux: 5G
 
       - name: Setup pnpm cache
         uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2

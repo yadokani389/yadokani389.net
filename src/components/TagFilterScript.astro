@@ -24,7 +24,7 @@ const { param = "tag" } = Astro.props;
     const label = document.querySelector("[data-filter-label]");
     if (banner && label) {
       label.textContent = tag;
-      banner.classList.add("is-active");
+      banner.hidden = false;
     }
   }
 </script>

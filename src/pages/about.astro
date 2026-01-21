@@ -3,18 +3,33 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="About" description="プロフィールや連絡先">
-  <div class="container">
-    <h1 class="page-title">About</h1>
+  <div class="mx-auto flex max-w-4xl flex-col gap-10">
+    <header class="space-y-3">
+      <p class="text-sm font-semibold text-ink-500">プロフィール</p>
+      <h1 class="text-3xl font-display text-ink-900 md:text-4xl">About</h1>
+    </header>
 
-    <section class="section prose">
-      <h2>プロフィール</h2>
-      <p>高専3年です。バックエンドが好きです。</p>
-
-      <h2>スキル</h2>
-      <p>Rust! Nix! それ以外は忘れてしまいました...</p>
-
-      <h2>Favorite Tools</h2>
-      <p>NixOS, Neovim, Kitty, Niri, Hazkey</p>
-    </section>
+    <div class="grid gap-6 md:grid-cols-2">
+      <section class="rounded-2xl border border-sand-200 bg-white p-6">
+        <h2 class="text-xl font-display text-ink-900">Profile</h2>
+        <p class="mt-3 text-sm leading-relaxed text-ink-600">
+          高専3年です。バックエンドが好きです。
+        </p>
+      </section>
+      <section class="rounded-2xl border border-sand-200 bg-white p-6">
+        <h2 class="text-xl font-display text-ink-900">Skills</h2>
+        <p class="mt-3 text-sm leading-relaxed text-ink-600">
+          Rust! Nix! それ以外は忘れてしまいました...
+        </p>
+      </section>
+      <section
+        class="rounded-2xl border border-sand-200 bg-white p-6 md:col-span-2"
+      >
+        <h2 class="text-xl font-display text-ink-900">Favorite Tools</h2>
+        <p class="mt-3 text-sm leading-relaxed text-ink-600">
+          NixOS, Neovim, Kitty, Niri, Hazkey
+        </p>
+      </section>
+    </div>
   </div>
 </Layout>

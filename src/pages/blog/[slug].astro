@@ -18,18 +18,29 @@ const { Content } = await render(post);
 ---
 
 <Layout title={post.data.title} description={post.data.description}>
-  <div class="container">
-    <h1 class="page-title">{post.data.title}</h1>
-    <p class="page-lede">{post.data.description}</p>
-    <div class="card-meta">
-      <time datetime={post.data.date.toISOString()}
-        >{formatDate(post.data.date)}</time
-      >
-    </div>
-    <div class="section section-tight">
+  <div class="mx-auto flex max-w-3xl flex-col gap-8">
+    <a
+      class="inline-flex items-center gap-2 text-sm font-semibold text-ink-600 hover:text-sage-600"
+      href="/blog"
+    >
+      ← Blogに戻る
+    </a>
+    <header class="space-y-3">
+      <p class="text-sm font-semibold text-ink-500">Blog</p>
+      <h1 class="text-3xl font-display text-ink-900 md:text-4xl">
+        {post.data.title}
+      </h1>
+      <p class="text-lg text-ink-600">{post.data.description}</p>
+      <div class="text-sm text-ink-500">
+        <time datetime={post.data.date.toISOString()}
+          >{formatDate(post.data.date)}</time
+        >
+      </div>
+    </header>
+    <div class="mt-1">
       <TagList tags={post.data.tags} basePath="/blog" />
     </div>
-    <div class="section prose">
+    <div class="prose prose-lg max-w-none">
       <Content />
     </div>
   </div>

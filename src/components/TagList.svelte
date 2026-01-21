@@ -7,13 +7,22 @@ const buildHref = (tag: string) =>
 </script>
 
 {#if tags.length > 0}
-	<ul class="tag-list">
+	<ul class="flex flex-wrap gap-2">
 		{#each tags as tag}
 			<li>
 				{#if basePath}
-					<a class="tag" href={buildHref(tag)}>{tag}</a>
+					<a
+						class="inline-flex items-center rounded-full border border-sand-200 bg-white px-3 py-1 text-xs font-semibold text-ink-600 transition hover:border-sage-500/40 hover:text-sage-700"
+						href={buildHref(tag)}
+					>
+						{tag}
+					</a>
 				{:else}
-					<span class="tag">{tag}</span>
+					<span
+						class="inline-flex items-center rounded-full border border-sand-200 bg-white px-3 py-1 text-xs font-semibold text-ink-600"
+					>
+						{tag}
+					</span>
 				{/if}
 			</li>
 		{/each}

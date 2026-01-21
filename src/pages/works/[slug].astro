@@ -17,13 +17,24 @@ const { Content } = await render(work);
 ---
 
 <Layout title={work.data.title} description={work.data.description}>
-  <div class="container">
-    <h1 class="page-title">{work.data.title}</h1>
-    <p class="page-lede">{work.data.description}</p>
+  <div class="mx-auto flex max-w-4xl flex-col gap-8">
+    <a
+      class="inline-flex items-center gap-2 text-sm font-semibold text-ink-600 hover:text-sage-600"
+      href="/works"
+    >
+      ← Worksに戻る
+    </a>
+    <header class="space-y-3">
+      <p class="text-sm font-semibold text-ink-500">作品</p>
+      <h1 class="text-3xl font-display text-ink-900 md:text-4xl">
+        {work.data.title}
+      </h1>
+      <p class="text-lg text-ink-600">{work.data.description}</p>
+    </header>
 
     {
       work.data.tags && (
-        <div class="section section-tight">
+        <div class="mt-1">
           <TagList tags={work.data.tags} basePath="/works" />
         </div>
       )
@@ -31,9 +42,9 @@ const { Content } = await render(work);
 
     {
       work.data.external_url && (
-        <div class="section section-tight">
+        <div class="flex flex-wrap items-center gap-3">
           <a
-            class="button primary"
+            class="inline-flex items-center gap-2 rounded-full bg-sage-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-sage-600"
             href={work.data.external_url}
             target="_blank"
             rel="noopener noreferrer"
@@ -44,7 +55,7 @@ const { Content } = await render(work);
       )
     }
 
-    <div class="section prose">
+    <div class="prose prose-lg max-w-none">
       <Content />
     </div>
   </div>

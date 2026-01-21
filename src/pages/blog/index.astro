@@ -11,22 +11,34 @@ const posts = (await getCollection("blog"))
 ---
 
 <Layout title="Blog" description="日々の記録や開発メモ">
-  <div class="container">
-    <h1 class="page-title">Blog</h1>
+  <div class="mx-auto flex max-w-5xl flex-col gap-10">
+    <header class="space-y-3">
+      <p class="text-sm font-semibold text-ink-500">ブログ</p>
+      <h1 class="text-3xl font-display text-ink-900 md:text-4xl">Blog</h1>
+    </header>
 
-    <div class="filter-banner" data-filter-banner>
-      <div class="filter-info">
-        <span>タグ:</span>
-        <strong data-filter-label></strong>
+    <div
+      class="flex flex-wrap items-center gap-3 rounded-full border border-sand-200 bg-white px-4 py-2 text-sm text-ink-600"
+      data-filter-banner
+      hidden
+    >
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-semibold text-ink-600">タグ</span>
+        <strong class="font-semibold text-ink-800" data-filter-label></strong>
       </div>
-      <a class="filter-clear" href="/blog">解除</a>
+      <a
+        class="ml-auto inline-flex items-center rounded-full border border-sand-200 bg-white px-3 py-1 text-xs font-semibold text-ink-600 transition hover:border-sage-500/40 hover:text-sage-700"
+        href="/blog"
+      >
+        解除
+      </a>
     </div>
 
-    <div class="list-stack">
+    <div class="grid gap-6">
       {
         posts.map((post) => (
           <article
-            class="card"
+            class="group relative flex cursor-pointer flex-col gap-4 rounded-2xl border border-sand-200 bg-white p-6 transition hover:border-sage-500/40 hover:shadow-soft focus-within:ring-2 focus-within:ring-sage-500/40"
             data-card-link
             data-href={`/blog/${post.id}`}
             data-tags={post.data.tags?.join(",")}
@@ -34,14 +46,20 @@ const posts = (await getCollection("blog"))
             tabindex="0"
             aria-label={`${post.data.title} の記事へ移動`}
           >
-            <div class="card-meta">
+            <div class="text-xs font-semibold text-ink-500">
               <span>{formatDate(post.data.date)}</span>
             </div>
             <div>
-              <h2 class="card-title">{post.data.title}</h2>
-              <p class="card-description">{post.data.description}</p>
+              <h2 class="text-xl font-display text-ink-900">
+                {post.data.title}
+              </h2>
+              <p class="mt-2 text-sm leading-relaxed text-ink-600">
+                {post.data.description}
+              </p>
             </div>
-            <TagList tags={post.data.tags} basePath="/blog" />
+            <div class="mt-2">
+              <TagList tags={post.data.tags} basePath="/blog" />
+            </div>
           </article>
         ))
       }

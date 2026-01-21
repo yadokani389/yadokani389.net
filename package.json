@@ -9,7 +9,10 @@
     "astro": "astro",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "astro check"
+    "check": "astro check",
+    "lint:eslint": "eslint .",
+    "lint:stylelint": "stylelint \"**/*.{css,astro,html,svelte,vue}\"",
+    "lint": "pnpm run lint:eslint && pnpm run lint:stylelint"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
@@ -20,7 +23,15 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
+    "eslint": "^9.39.2",
+    "eslint-plugin-astro": "^1.5.0",
+    "postcss-html": "^1.8.1",
     "prettier": "^3.8.0",
-    "prettier-plugin-astro": "^0.14.1"
+    "prettier-plugin-astro": "^0.14.1",
+    "stylelint": "^17.0.0",
+    "stylelint-config-html": "^1.1.0",
+    "stylelint-config-recommended": "^18.0.0"
   }
 }

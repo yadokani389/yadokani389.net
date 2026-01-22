@@ -5,7 +5,7 @@ const tsPlugin = require("@typescript-eslint/eslint-plugin");
 
 module.exports = [
   {
-    ignores: [".astro/**"],
+    ignores: [".astro/**", "dist/**"],
   },
   js.configs.recommended,
   {

@@ -1,4 +1,5 @@
 module.exports = {
+  ignoreFiles: ["dist/**"],
   extends: ["stylelint-config-recommended", "stylelint-config-html"],
   rules: {
     "at-rule-no-unknown": [

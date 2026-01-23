@@ -4,7 +4,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 import Layout from "../layouts/Layout.astro";
 
 const works = (await getCollection("works"))
-  .sort((a, b) => a.data.title.localeCompare(b.data.title))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 5);
 const posts = (await getCollection("blog"))
   .filter((post) => !post.data.draft)

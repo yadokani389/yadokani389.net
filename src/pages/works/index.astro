@@ -4,8 +4,8 @@ import TagFilterScript from "../../components/TagFilterScript.astro";
 import TagList from "../../components/TagList.svelte";
 import Layout from "../../layouts/Layout.astro";
 
-const works = (await getCollection("works")).sort((a, b) =>
-  a.data.title.localeCompare(b.data.title),
+const works = (await getCollection("works")).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
 ---
 

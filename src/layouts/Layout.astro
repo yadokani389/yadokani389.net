@@ -74,7 +74,24 @@ const navItems = [
       <div
         class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-10 text-sm text-ink-600"
       >
-        <span>© 2026 {SITE_TITLE}</span>
+        <div
+          class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-500"
+        >
+          <span>© 2026 {SITE_TITLE}</span>
+          <span aria-hidden="true">·</span>
+          <span>
+            License: Blog Content
+            <a
+              class="font-semibold text-ink-600 hover:text-sage-600"
+              href="https://creativecommons.org/licenses/by-sa/4.0/"
+              >CC BY-SA 4.0</a
+            > · Code
+            <a
+              class="font-semibold text-ink-600 hover:text-sage-600"
+              href="https://opensource.org/license/MIT">MIT</a
+            >
+          </span>
+        </div>
         <div class="flex items-center gap-4">
           <a
             class="inline-flex items-center gap-2 text-ink-600 transition hover:text-sage-600"

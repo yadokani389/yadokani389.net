@@ -6,7 +6,15 @@ import Layout from "../layouts/Layout.astro";
   <div class="mx-auto flex max-w-4xl flex-col gap-10">
     <header class="space-y-3">
       <p class="text-sm font-semibold text-ink-500">プロフィール</p>
-      <h1 class="text-3xl font-display text-ink-900 md:text-4xl">About</h1>
+      <div class="flex flex-wrap items-center gap-3">
+        <img
+          class="h-10 w-10 rounded-full border border-sand-200"
+          src="/favicon.png"
+          alt="yadokani389 icon"
+          loading="lazy"
+        />
+        <h1 class="text-3xl font-display text-ink-900 md:text-4xl">About</h1>
+      </div>
     </header>
 
     <div class="grid gap-6 md:grid-cols-2">

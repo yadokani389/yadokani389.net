@@ -20,9 +20,17 @@ const posts = (await getCollection("blog"))
       <p class="text-xs font-semibold tracking-[0.12em] text-ink-500">
         ようこそ
       </p>
-      <h1 class="mt-2 text-4xl font-display text-ink-900 md:text-5xl">
-        {SITE_TITLE}
-      </h1>
+      <div class="mt-2 flex flex-wrap items-center gap-3">
+        <img
+          class="h-12 w-12 rounded-full border border-sand-200"
+          src="/favicon.png"
+          alt="yadokani389 icon"
+          loading="lazy"
+        />
+        <h1 class="text-4xl font-display text-ink-900 md:text-5xl">
+          {SITE_TITLE}
+        </h1>
+      </div>
       <p class="mt-3 max-w-2xl text-base leading-relaxed text-ink-600">
         {SITE_DESCRIPTION}
       </p>

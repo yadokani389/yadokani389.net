@@ -3,11 +3,11 @@ import { getCollection } from "astro:content";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 import Layout from "../layouts/Layout.astro";
 
-const works = (await getCollection("works"))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 5);
 const posts = (await getCollection("blog"))
   .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 2);
+const works = (await getCollection("works"))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 ---

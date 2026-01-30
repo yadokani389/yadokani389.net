@@ -1,6 +1,7 @@
 ---
 import { getCollection, getEntry, render } from "astro:content";
 import TagList from "../../components/TagList.svelte";
+import Budoux from "../../components/Budoux.astro";
 import Layout from "../../layouts/Layout.astro";
 
 export async function getStaticPaths() {
@@ -26,10 +27,12 @@ const { Content } = await render(work);
     </a>
     <header class="space-y-3">
       <p class="text-sm font-semibold text-ink-500">作品</p>
-      <h1 class="text-3xl font-display text-ink-900 md:text-4xl">
-        {work.data.title}
+      <h1 data-budoux class="text-3xl font-display text-ink-900 md:text-4xl">
+        <Budoux text={work.data.title} />
       </h1>
-      <p class="text-lg text-ink-600">{work.data.description}</p>
+      <p data-budoux class="text-lg text-ink-600">
+        <Budoux text={work.data.description} />
+      </p>
     </header>
 
     {

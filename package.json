@@ -23,18 +23,23 @@
     "@astrojs/svelte": "^8.0.0-beta.2",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.18",
+    "@types/hast": "^3.0.4",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
     "astro": "^6.0.0-beta.5",
+    "budoux": "^0.7.0",
     "eslint": "^9.39.2",
     "eslint-plugin-astro": "^1.5.0",
+    "hastscript": "^9.0.1",
     "postcss-html": "^1.8.1",
     "prettier": "^3.8.1",
     "prettier-plugin-astro": "^0.14.1",
+    "rehype": "^13.0.2",
     "stylelint": "^17.0.0",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-recommended": "^18.0.0",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "unist-util-visit": "^5.1.0"
   }
 }

@@ -4,6 +4,7 @@ import svelte from "@astrojs/svelte";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import { SITE_URL } from "./src/consts";
+import rehypeBudoux from "./src/lib/rehype-budoux";
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,5 +12,8 @@ export default defineConfig({
   integrations: [svelte(), mdx()],
   vite: {
     plugins: [tailwindcss()],
+  },
+  markdown: {
+    rehypePlugins: [rehypeBudoux],
   },
 });

@@ -87,6 +87,7 @@
               packages = with pkgs; [
                 nodejs-slim
                 pnpm
+                wrangler
               ];
             };
           };

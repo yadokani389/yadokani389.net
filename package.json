@@ -15,26 +15,26 @@
     "lint": "pnpm run lint:eslint && pnpm run lint:stylelint"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.13",
-    "@astrojs/svelte": "^7.2.5",
-    "astro": "^6.0.0-beta.1",
-    "svelte": "^5.46.4",
-    "typescript": "^5.9.3"
+    "svelte": "^5.49.1"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.6",
+    "@astrojs/check": "^0.9.7-beta.1",
+    "@astrojs/mdx": "^5.0.0-beta.2",
+    "@astrojs/svelte": "^8.0.0-beta.2",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.18",
-    "@typescript-eslint/eslint-plugin": "^8.53.1",
-    "@typescript-eslint/parser": "^8.53.1",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "astro": "^6.0.0-beta.5",
     "eslint": "^9.39.2",
     "eslint-plugin-astro": "^1.5.0",
     "postcss-html": "^1.8.1",
-    "prettier": "^3.8.0",
+    "prettier": "^3.8.1",
     "prettier-plugin-astro": "^0.14.1",
     "stylelint": "^17.0.0",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-recommended": "^18.0.0",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3"
   }
 }

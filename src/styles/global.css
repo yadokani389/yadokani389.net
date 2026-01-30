@@ -119,3 +119,8 @@
     @apply border-l-4 border-clay-400 text-ink-600;
   }
 }
+
+[data-budoux] {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}

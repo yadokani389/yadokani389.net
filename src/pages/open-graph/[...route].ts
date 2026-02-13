@@ -54,7 +54,7 @@ const CARD_FRAME_PATH = path.join(
 const BRAND_ICON_PATH = path.join(process.cwd(), "public", "favicon.png");
 const BRAND_NAME = SITE_TITLE;
 const BRAND_FONT_URL =
-  "https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-jp@latest/latin-700-normal.ttf";
+  "https://cdn.jsdelivr.net/fontsource/fonts/fredoka@latest/latin-700-normal.ttf";
 
 const { resolve } = createRequire(import.meta.url);
 let canvasKitPromise: Promise<CanvasKit> | undefined;
@@ -143,7 +143,7 @@ const generateCardFrameImage = async (): Promise<Buffer> => {
   const brandParagraphStyle = new CanvasKit.ParagraphStyle({
     textStyle: {
       color: CanvasKit.Color(30, 72, 66, 1),
-      fontFamilies: ["Noto Sans JP"],
+      fontFamilies: ["Fredoka"],
       fontSize: 44,
       fontStyle: { weight: CanvasKit.FontWeight.Bold },
     },
@@ -260,10 +260,12 @@ const ensureCardFrameImage = async (): Promise<string> => {
 const cardFramePath = await ensureCardFrameImage();
 
 const ogFonts = [
-  "https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-jp@latest/japanese-500-normal.ttf",
-  "https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-jp@latest/latin-500-normal.ttf",
-  "https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-jp@latest/japanese-700-normal.ttf",
-  "https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-jp@latest/latin-700-normal.ttf",
+  "https://cdn.jsdelivr.net/fontsource/fonts/fredoka@latest/latin-500-normal.ttf",
+  "https://cdn.jsdelivr.net/fontsource/fonts/fredoka@latest/latin-700-normal.ttf",
+  "https://cdn.jsdelivr.net/fontsource/fonts/m-plus-rounded-1c@latest/japanese-500-normal.ttf",
+  "https://cdn.jsdelivr.net/fontsource/fonts/m-plus-rounded-1c@latest/latin-500-normal.ttf",
+  "https://cdn.jsdelivr.net/fontsource/fonts/m-plus-rounded-1c@latest/japanese-700-normal.ttf",
+  "https://cdn.jsdelivr.net/fontsource/fonts/m-plus-rounded-1c@latest/latin-700-normal.ttf",
 ];
 
 const bgGradient: [number, number, number][] = [
@@ -306,11 +308,22 @@ export const { getStaticPaths, GET } = await OGImageRoute({
           size: titleSize,
           weight: "Bold",
           lineHeight: 1.12,
+          families: [
+            "Fredoka",
+            "Rounded Mplus 1c Bold",
+            "Rounded Mplus 1c Medium",
+          ],
         },
         description: {
           color: descriptionColor,
           size: 32,
+          weight: "Medium",
           lineHeight: 1.3,
+          families: [
+            "Rounded Mplus 1c Medium",
+            "Rounded Mplus 1c Bold",
+            "Fredoka",
+          ],
         },
       },
       bgGradient,

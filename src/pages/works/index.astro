@@ -3,13 +3,17 @@ import { getCollection } from "astro:content";
 import TagFilterScript from "../../components/TagFilterScript.astro";
 import TagList from "../../components/TagList.svelte";
 import Layout from "../../layouts/Layout.astro";
+import { PAGE_META } from "../../seo/pageMeta";
 
 const works = (await getCollection("works")).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
 ---
 
-<Layout title="Works" description="制作したゲームやツールの一覧">
+<Layout
+  title={PAGE_META.worksIndex.title}
+  description={PAGE_META.worksIndex.description}
+>
   <div class="mx-auto flex max-w-5xl flex-col gap-10">
     <header class="space-y-3">
       <p class="text-sm font-semibold text-ink-500">作品まとめ</p>

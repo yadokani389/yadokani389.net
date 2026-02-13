@@ -18,7 +18,13 @@ if (!post) {
 const { Content } = await render(post);
 ---
 
-<Layout title={post.data.title} description={post.data.description}>
+<Layout
+  title={post.data.title}
+  description={post.data.description}
+  ogType="article"
+  publishedTime={post.data.date.toISOString()}
+  tags={post.data.tags}
+>
   <div class="mx-auto flex max-w-3xl flex-col gap-8">
     <a
       class="inline-flex items-center gap-2 text-sm font-semibold text-ink-600 hover:text-sage-600"

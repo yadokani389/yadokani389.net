@@ -1,8 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { PAGE_META } from "../seo/pageMeta";
 ---
 
-<Layout title="About" description="プロフィールや連絡先">
+<Layout title={PAGE_META.about.title} description={PAGE_META.about.description}>
   <div class="mx-auto flex max-w-4xl flex-col gap-10">
     <header class="space-y-3">
       <p class="text-sm font-semibold text-ink-500">プロフィール</p>

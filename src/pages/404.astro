@@ -1,8 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { PAGE_META } from "../seo/pageMeta";
 ---
 
-<Layout title="404" description="ページが見つかりません">
+<Layout
+  title={PAGE_META.notFound.title}
+  description={PAGE_META.notFound.description}
+>
   <div
     class="mx-auto flex max-w-5xl flex-col items-center justify-center gap-6 pb-6 text-center"
   >

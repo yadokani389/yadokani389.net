@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import TagFilterScript from "../../components/TagFilterScript.astro";
 import TagList from "../../components/TagList.svelte";
 import Layout from "../../layouts/Layout.astro";
+import { PAGE_META } from "../../seo/pageMeta";
 import { formatDate } from "../../utils/formatDate";
 
 const posts = (await getCollection("blog"))
@@ -10,7 +11,10 @@ const posts = (await getCollection("blog"))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
 
-<Layout title="Blog" description="日々の記録や開発メモ">
+<Layout
+  title={PAGE_META.blogIndex.title}
+  description={PAGE_META.blogIndex.description}
+>
   <div class="mx-auto flex max-w-5xl flex-col gap-10">
     <header class="space-y-3">
       <p class="text-sm font-semibold text-ink-500">ブログ</p>

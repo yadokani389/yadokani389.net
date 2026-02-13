@@ -1,6 +1,7 @@
 ---
 import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "../consts";
 import {
+  OG_IMAGE_VERSION,
   OG_DEFAULT_IMAGE_PATH,
   STATIC_OG_IMAGE_BY_PATH,
 } from "../seo/pageMeta";
@@ -37,7 +38,9 @@ const isDynamicOgPath = dynamicPathPrefixes.some((prefix) =>
 const ogImagePath = isDynamicOgPath
   ? `/open-graph${normalizedPath}.png`
   : (STATIC_OG_IMAGE_BY_PATH[normalizedPath] ?? OG_DEFAULT_IMAGE_PATH);
-const ogImageUrl = new URL(ogImage ?? ogImagePath, site).toString();
+const ogImageResolvedUrl = new URL(ogImage ?? ogImagePath, site);
+ogImageResolvedUrl.searchParams.set("v", OG_IMAGE_VERSION);
+const ogImageUrl = ogImageResolvedUrl.toString();
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/blog", label: "Blog" },

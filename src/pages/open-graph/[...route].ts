@@ -7,7 +7,7 @@ import path from "node:path";
 import process from "node:process";
 import type { CanvasKit, FontMgr } from "canvaskit-wasm";
 import { SITE_TITLE } from "../../consts";
-import { STATIC_OG_PAGES } from "../../seo/pageMeta";
+import { OG_IMAGE_VERSION, STATIC_OG_PAGES } from "../../seo/pageMeta";
 
 type OGPage = {
   title: string;
@@ -45,12 +45,11 @@ const pages: Record<string, OGPage> = {
 
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
-const CARD_FRAME_VERSION = "v4";
 const CARD_FRAME_PATH = path.join(
   process.cwd(),
   "node_modules",
   ".astro-og-canvas",
-  `card-frame-${CARD_FRAME_VERSION}.png`,
+  `card-frame-${OG_IMAGE_VERSION}.png`,
 );
 const BRAND_ICON_PATH = path.join(process.cwd(), "public", "favicon.png");
 const BRAND_NAME = SITE_TITLE;
@@ -107,6 +106,8 @@ const generateCardFrameImage = async (): Promise<Buffer> => {
     throw new Error(`Failed to decode icon image: ${BRAND_ICON_PATH}`);
   }
 
+  const iconImageWithMipmaps = iconImage.makeCopyWithDefaultMipmaps();
+
   const surface = CanvasKit.MakeSurface(OG_WIDTH, OG_HEIGHT);
   if (!surface) {
     throw new Error("Failed to create CanvasKit surface");
@@ -132,7 +133,7 @@ const generateCardFrameImage = async (): Promise<Buffer> => {
   cardPaint.setColor(CanvasKit.Color(247, 251, 252));
   canvas.drawRRect(cardRRect, cardPaint);
 
-  const iconSize = 74;
+  const iconSize = 96;
   const rightPadding = 64;
   const bottomPadding = 56;
   const iconX = OG_WIDTH - rightPadding - iconSize;
@@ -169,11 +170,49 @@ const generateCardFrameImage = async (): Promise<Buffer> => {
     CanvasKit.ClipOp.Intersect,
     true,
   );
+  const iconSourceRect = CanvasKit.XYWHRect(
+    0,
+    0,
+    iconImage.width(),
+    iconImage.height(),
+  );
+  const iconPassSize = iconSize * 2;
+  const iconPassRect = CanvasKit.XYWHRect(0, 0, iconPassSize, iconPassSize);
+  const iconSurface = CanvasKit.MakeSurface(iconPassSize, iconPassSize);
+  if (!iconSurface) {
+    throw new Error("Failed to create icon supersampling surface");
+  }
+  const iconCanvas = iconSurface.getCanvas();
+  iconCanvas.clear(CanvasKit.TRANSPARENT);
+
+  const iconPassPaint = new CanvasKit.Paint();
+  iconPassPaint.setDither(true);
+  iconCanvas.drawImageRectOptions(
+    iconImageWithMipmaps,
+    iconSourceRect,
+    iconPassRect,
+    CanvasKit.FilterMode.Linear,
+    CanvasKit.MipmapMode.Linear,
+    iconPassPaint,
+  );
+
+  const iconPreparedImage = iconSurface.makeImageSnapshot();
   const iconPaint = new CanvasKit.Paint();
-  canvas.drawImageRect(
-    iconImage,
-    CanvasKit.XYWHRect(0, 0, iconImage.width(), iconImage.height()),
+  iconPaint.setAntiAlias(true);
+  iconPaint.setDither(true);
+  const iconBlurFilter = CanvasKit.ImageFilter.MakeBlur(
+    0.45,
+    0.45,
+    CanvasKit.TileMode.Decal,
+    null,
+  );
+  iconPaint.setImageFilter(iconBlurFilter);
+  canvas.drawImageRectCubic(
+    iconPreparedImage,
+    iconPassRect,
     iconRect,
+    1,
+    0,
     iconPaint,
   );
   canvas.restore();
@@ -184,6 +223,11 @@ const generateCardFrameImage = async (): Promise<Buffer> => {
   brandParagraph.delete();
   brandParagraphBuilder.delete();
   iconPaint.delete();
+  iconBlurFilter.delete();
+  iconPassPaint.delete();
+  iconPreparedImage.delete();
+  iconSurface.dispose();
+  iconImageWithMipmaps.delete();
   iconImage.delete();
   cardPaint.delete();
   shadowPaint.delete();

@@ -5,6 +5,8 @@ type PageMeta = {
   description: string;
 };
 
+export const OG_IMAGE_VERSION = "v5";
+
 export const PAGE_META = {
   home: {
     title: "Home",

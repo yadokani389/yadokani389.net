@@ -4,6 +4,8 @@ import { Buffer } from "node:buffer";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
+import process from "node:process";
+import type { CanvasKit, FontMgr } from "canvaskit-wasm";
 import { SITE_TITLE } from "../../consts";
 import { STATIC_OG_PAGES } from "../../seo/pageMeta";
 
@@ -56,10 +58,10 @@ const BRAND_FONT_URL =
   "https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-jp@latest/latin-700-normal.ttf";
 
 const { resolve } = createRequire(import.meta.url);
-let canvasKitPromise: Promise<any> | undefined;
-let brandFontManagerPromise: Promise<any> | undefined;
+let canvasKitPromise: Promise<CanvasKit> | undefined;
+let brandFontManagerPromise: Promise<FontMgr> | undefined;
 
-const getCanvasKit = (): Promise<any> => {
+const getCanvasKit = (): Promise<CanvasKit> => {
   if (!canvasKitPromise) {
     canvasKitPromise = import("canvaskit-wasm/full").then(({ default: init }) =>
       init({
@@ -71,9 +73,10 @@ const getCanvasKit = (): Promise<any> => {
   return canvasKitPromise;
 };
 
-const getBrandFontManager = (CanvasKit: any): Promise<any> => {
+const getBrandFontManager = (CanvasKit: CanvasKit): Promise<FontMgr> => {
   if (!brandFontManagerPromise) {
-    brandFontManagerPromise = fetch(BRAND_FONT_URL)
+    brandFontManagerPromise = globalThis
+      .fetch(BRAND_FONT_URL)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Failed to load brand font: ${response.status}`);

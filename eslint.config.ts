@@ -1,9 +1,10 @@
-const js = require("@eslint/js");
-const eslintPluginAstro = require("eslint-plugin-astro");
-const tsParser = require("@typescript-eslint/parser");
-const tsPlugin = require("@typescript-eslint/eslint-plugin");
+import js from "@eslint/js";
+import astroParser from "astro-eslint-parser";
+import * as tsPlugin from "@typescript-eslint/eslint-plugin";
+import * as tsParser from "@typescript-eslint/parser";
+import * as eslintPluginAstro from "eslint-plugin-astro";
 
-module.exports = [
+export default [
   {
     ignores: [".astro/**", "dist/**"],
   },
@@ -28,17 +29,11 @@ module.exports = [
   {
     files: ["**/*.astro"],
     languageOptions: {
-      parser: require("astro-eslint-parser"),
+      parser: astroParser,
       parserOptions: {
         parser: tsParser,
         extraFileExtensions: [".astro"],
       },
-    },
-  },
-  {
-    files: ["eslint.config.cjs"],
-    rules: {
-      "@typescript-eslint/no-require-imports": "off",
     },
   },
 ];

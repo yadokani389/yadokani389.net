@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
   ignoreFiles: ["dist/**"],
   extends: ["stylelint-config-recommended", "stylelint-config-html"],
   rules: {
@@ -26,3 +26,5 @@ module.exports = {
     "no-descending-specificity": null,
   },
 };
+
+export default config;

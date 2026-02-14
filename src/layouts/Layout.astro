@@ -18,6 +18,7 @@ import {
   OG_DEFAULT_IMAGE_PATH,
   STATIC_OG_IMAGE_BY_PATH,
 } from "../seo/pageMeta";
+import { daisyThemes, darkThemeModes } from "../lib/daisyThemes";
 import "../styles/global.css";
 
 interface Props {
@@ -60,6 +61,15 @@ const navItems = [
   { href: "/works", label: "Works" },
   { href: "/about", label: "About" },
 ];
+const themeStorageKey = "theme-preference";
+const themePickerId = "theme-picker";
+const defaultThemeMode = "retro";
+const themeModes = ["system", ...daisyThemes];
+const formatThemeLabel = (theme: string) =>
+  theme
+    .split("-")
+    .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
+    .join(" ");
 ---
 
 <!doctype html>
@@ -67,6 +77,48 @@ const navItems = [
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
+    <script
+      is:inline
+      define:vars={{
+        daisyThemes,
+        darkThemeModes,
+        themeStorageKey,
+        defaultThemeMode,
+      }}
+    >
+      (() => {
+        const resolveTheme = (mode, prefersDark) =>
+          mode === "system" ? (prefersDark ? "dark" : "light") : mode;
+        const resolveColorScheme = (mode, prefersDark) =>
+          mode === "system"
+            ? prefersDark
+              ? "dark"
+              : "light"
+            : darkThemeModes.includes(mode)
+              ? "dark"
+              : "light";
+        const isValidMode = (mode) =>
+          mode === "system" || daisyThemes.includes(mode);
+
+        let initialMode = defaultThemeMode;
+        try {
+          const storedMode = localStorage.getItem(themeStorageKey);
+          initialMode = isValidMode(storedMode) ? storedMode : defaultThemeMode;
+        } catch {
+          initialMode = defaultThemeMode;
+        }
+
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        const initialTheme = resolveTheme(initialMode, prefersDark);
+        const initialColorScheme = resolveColorScheme(initialMode, prefersDark);
+
+        document.documentElement.setAttribute("data-theme", initialTheme);
+        document.documentElement.dataset.themeMode = initialMode;
+        document.documentElement.dataset.colorScheme = initialColorScheme;
+      })();
+    </script>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="canonical" href={canonicalUrl} />
     <meta name="generator" content={Astro.generator} />
@@ -97,43 +149,107 @@ const navItems = [
   </head>
   <body>
     <a
-      class="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink-900 focus:shadow-soft focus:ring-2 focus:ring-sage-500/40"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:z-50 focus:rounded-full focus:bg-sand-50 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink-900 focus:shadow-soft focus:ring-2 focus:ring-sage-500/40"
       href="#main">本文へスキップ</a
     >
-    <header class="sticky top-0 z-20 border-b border-sand-200 bg-white">
+    <header class="sticky top-0 z-20 border-b border-sand-200 bg-sand-50">
       <div
         class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-4"
       >
         <a class="text-lg font-display font-semibold text-ink-900" href="/">
           {SITE_TITLE}
         </a>
-        <nav
-          class="flex flex-wrap items-center gap-3 text-sm"
-          aria-label="Main"
-        >
-          {
-            navItems.map((item) => (
-              <a
-                href={item.href}
-                class:list={{
-                  "border-b-2 border-transparent px-1 pb-1 text-sm font-semibold transition": true,
-                  "border-sage-500 text-ink-900": normalizedPath === item.href,
-                  "text-ink-500 hover:text-ink-900":
-                    normalizedPath !== item.href,
-                }}
-                aria-current={normalizedPath === item.href ? "page" : undefined}
+        <div class="flex flex-wrap items-center justify-end gap-3">
+          <nav
+            class="flex flex-wrap items-center gap-3 text-sm"
+            aria-label="Main"
+          >
+            {
+              navItems.map((item) => (
+                <a
+                  href={item.href}
+                  class:list={{
+                    "inline-flex h-8 items-center border-b-2 border-transparent px-1 text-sm font-semibold transition": true,
+                    "border-sage-500 text-ink-900":
+                      normalizedPath === item.href,
+                    "text-ink-500 hover:text-ink-900":
+                      normalizedPath !== item.href,
+                  }}
+                  aria-current={
+                    normalizedPath === item.href ? "page" : undefined
+                  }
+                >
+                  {item.label}
+                </a>
+              ))
+            }
+          </nav>
+          <details id={themePickerId} class="relative">
+            <summary
+              class="flex h-8 list-none items-center gap-2 rounded-full border border-sand-300 bg-sand-50 px-3 text-xs font-semibold text-ink-700 shadow-soft transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none [&::-webkit-details-marker]:hidden"
+              aria-label="テーマを選択"
+            >
+              <span data-theme-current-label
+                >{formatThemeLabel(defaultThemeMode)}</span
               >
-                {item.label}
-              </a>
-            ))
-          }
-        </nav>
+              <span class="inline-flex items-center gap-1" aria-hidden="true">
+                <span
+                  class="h-2.5 w-2.5 rounded-full border border-sand-300"
+                  data-theme-current-chip="base"></span>
+                <span
+                  class="h-2.5 w-2.5 rounded-full border border-sand-300"
+                  data-theme-current-chip="primary"></span>
+                <span
+                  class="h-2.5 w-2.5 rounded-full border border-sand-300"
+                  data-theme-current-chip="secondary"></span>
+              </span>
+              <span aria-hidden="true">▾</span>
+            </summary>
+            <div
+              class="absolute right-0 z-40 mt-2 w-64 rounded-2xl border border-sand-200 bg-sand-50 p-2 shadow-lift"
+            >
+              <ul class="max-h-80 space-y-1 overflow-auto pr-1">
+                {
+                  themeModes.map((theme) => (
+                    <li>
+                      <button
+                        type="button"
+                        data-theme-value={theme}
+                        data-theme-label={formatThemeLabel(theme)}
+                        class="flex w-full items-center justify-between rounded-xl border border-sand-200 bg-sand-50 px-3 py-2 text-left text-xs font-semibold text-ink-700 transition hover:border-sage-500/40 hover:bg-sand-100"
+                      >
+                        <span>{formatThemeLabel(theme)}</span>
+                        <span
+                          class="inline-flex items-center gap-1"
+                          aria-hidden="true"
+                        >
+                          <span
+                            class="h-2.5 w-2.5 rounded-full border border-sand-300"
+                            data-theme-preview-chip="base"
+                          />
+                          <span
+                            class="h-2.5 w-2.5 rounded-full border border-sand-300"
+                            data-theme-preview-chip="primary"
+                          />
+                          <span
+                            class="h-2.5 w-2.5 rounded-full border border-sand-300"
+                            data-theme-preview-chip="secondary"
+                          />
+                        </span>
+                      </button>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </details>
+        </div>
       </div>
     </header>
     <main id="main" class="flex-1 px-6 pb-20 pt-8">
       <slot />
     </main>
-    <footer class="border-t border-sand-200 bg-white/70">
+    <footer class="border-t border-sand-200 bg-sand-50/70">
       <div
         class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-10 text-sm text-ink-600"
       >
@@ -205,7 +321,199 @@ const navItems = [
         </div>
       </div>
     </footer>
-    <script is:inline>
+    <script
+      is:inline
+      define:vars={{
+        daisyThemes,
+        darkThemeModes,
+        themeStorageKey,
+        defaultThemeMode,
+      }}
+    >
+      (() => {
+        const resolveTheme = (mode, prefersDark) =>
+          mode === "system" ? (prefersDark ? "dark" : "light") : mode;
+        const isValidMode = (mode) =>
+          mode === "system" || daisyThemes.includes(mode);
+        const detectColorScheme = (mode) => {
+          if (mode === "system") {
+            return themeMediaQuery.matches ? "dark" : "light";
+          }
+          const cssColorScheme = getComputedStyle(
+            document.documentElement,
+          ).colorScheme;
+          if (cssColorScheme.includes("dark")) {
+            return "dark";
+          }
+          if (cssColorScheme.includes("light")) {
+            return "light";
+          }
+          return darkThemeModes.includes(mode) ? "dark" : "light";
+        };
+        const getThemePreview = (probe, mode, prefersDark) => {
+          const resolved = resolveTheme(mode, prefersDark);
+          probe.setAttribute("data-theme", resolved);
+          const style = getComputedStyle(probe);
+          return {
+            base: style.getPropertyValue("--color-base-100").trim(),
+            primary: style.getPropertyValue("--color-primary").trim(),
+            secondary: style.getPropertyValue("--color-secondary").trim(),
+          };
+        };
+        const applyPreviewToChips = (chips, preview) => {
+          if (chips.base instanceof HTMLElement) {
+            chips.base.style.backgroundColor = preview.base;
+          }
+          if (chips.primary instanceof HTMLElement) {
+            chips.primary.style.backgroundColor = preview.primary;
+          }
+          if (chips.secondary instanceof HTMLElement) {
+            chips.secondary.style.backgroundColor = preview.secondary;
+          }
+        };
+
+        const themeMediaQuery = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        );
+        const themePicker = document.getElementById("theme-picker");
+        const themeCurrentLabel = document.querySelector(
+          "[data-theme-current-label]",
+        );
+        const themeCurrentChips = {
+          base: document.querySelector('[data-theme-current-chip="base"]'),
+          primary: document.querySelector(
+            '[data-theme-current-chip="primary"]',
+          ),
+          secondary: document.querySelector(
+            '[data-theme-current-chip="secondary"]',
+          ),
+        };
+        const themeOptions = Array.from(
+          document.querySelectorAll("[data-theme-value]"),
+        );
+        const themeLabels = new Map(
+          themeOptions
+            .map((option) => {
+              const mode = option.getAttribute("data-theme-value");
+              const label = option.getAttribute("data-theme-label");
+              if (!mode || !label) return null;
+              return [mode, label];
+            })
+            .filter(Boolean),
+        );
+        const previewProbe = document.createElement("div");
+        previewProbe.setAttribute("aria-hidden", "true");
+        previewProbe.style.position = "fixed";
+        previewProbe.style.opacity = "0";
+        previewProbe.style.pointerEvents = "none";
+        previewProbe.style.left = "-9999px";
+        previewProbe.style.top = "-9999px";
+        document.body.append(previewProbe);
+
+        const updateOptionPreviews = () => {
+          themeOptions.forEach((option) => {
+            const mode = option.getAttribute("data-theme-value");
+            if (!mode) return;
+            const preview = getThemePreview(
+              previewProbe,
+              mode,
+              themeMediaQuery.matches,
+            );
+            const chips = {
+              base: option.querySelector('[data-theme-preview-chip="base"]'),
+              primary: option.querySelector(
+                '[data-theme-preview-chip="primary"]',
+              ),
+              secondary: option.querySelector(
+                '[data-theme-preview-chip="secondary"]',
+              ),
+            };
+            applyPreviewToChips(chips, preview);
+          });
+        };
+
+        const updateThemePickerState = (mode) => {
+          const safeMode = isValidMode(mode) ? mode : defaultThemeMode;
+          themeOptions.forEach((option) => {
+            const optionMode = option.getAttribute("data-theme-value");
+            const isActive = optionMode === safeMode;
+            option.classList.toggle("border-sage-500/40", isActive);
+            option.classList.toggle("bg-sand-100", isActive);
+            option.classList.toggle("text-ink-900", isActive);
+          });
+          if (themeCurrentLabel instanceof HTMLElement) {
+            themeCurrentLabel.textContent =
+              themeLabels.get(safeMode) ?? defaultThemeMode;
+          }
+          const preview = getThemePreview(
+            previewProbe,
+            safeMode,
+            themeMediaQuery.matches,
+          );
+          applyPreviewToChips(themeCurrentChips, preview);
+        };
+
+        const getStoredMode = () => {
+          try {
+            const storedMode = localStorage.getItem(themeStorageKey);
+            return isValidMode(storedMode) ? storedMode : defaultThemeMode;
+          } catch {
+            return defaultThemeMode;
+          }
+        };
+
+        const applyThemeMode = (mode, shouldPersist) => {
+          const safeMode = isValidMode(mode) ? mode : defaultThemeMode;
+          const resolvedTheme = resolveTheme(safeMode, themeMediaQuery.matches);
+
+          document.documentElement.setAttribute("data-theme", resolvedTheme);
+          document.documentElement.dataset.themeMode = safeMode;
+          document.documentElement.dataset.colorScheme =
+            detectColorScheme(safeMode);
+          updateThemePickerState(safeMode);
+
+          if (shouldPersist) {
+            try {
+              localStorage.setItem(themeStorageKey, safeMode);
+            } catch {
+              return;
+            }
+          }
+        };
+
+        updateOptionPreviews();
+        applyThemeMode(getStoredMode(), false);
+
+        themeOptions.forEach((option) => {
+          option.addEventListener("click", () => {
+            const mode = option.getAttribute("data-theme-value");
+            if (!mode) return;
+            applyThemeMode(mode, true);
+            if (themePicker instanceof HTMLDetailsElement) {
+              themePicker.open = false;
+            }
+          });
+        });
+
+        themeMediaQuery.addEventListener("change", () => {
+          updateOptionPreviews();
+          if (document.documentElement.dataset.themeMode === "system") {
+            applyThemeMode("system", false);
+          } else {
+            updateThemePickerState(document.documentElement.dataset.themeMode);
+          }
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!(themePicker instanceof HTMLDetailsElement)) return;
+          if (!themePicker.open) return;
+          const target = event.target;
+          if (!(target instanceof Node)) return;
+          if (themePicker.contains(target)) return;
+          themePicker.open = false;
+        });
+      })();
+
       document.addEventListener("click", (event) => {
         const target = event.target;
         if (!(target instanceof Element)) return;

@@ -16,6 +16,12 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   markdown: {
+    shikiConfig: {
+      themes: {
+        light: "github-light",
+        dark: "github-dark",
+      },
+    },
     remarkPlugins: [remarkRuby, remarkGemoji],
     rehypePlugins: [rehypeBudoux],
   },

@@ -1,4 +1,17 @@
 ---
+import "@fontsource/fredoka/latin-400.css";
+import "@fontsource/fredoka/latin-500.css";
+import "@fontsource/fredoka/latin-600.css";
+import "@fontsource/fredoka/latin-700.css";
+import "@fontsource/jetbrains-mono/latin-400.css";
+import "@fontsource/jetbrains-mono/latin-500.css";
+import "@fontsource/jetbrains-mono/latin-600.css";
+import "@fontsource/m-plus-rounded-1c/latin-400.css";
+import "@fontsource/m-plus-rounded-1c/latin-500.css";
+import "@fontsource/m-plus-rounded-1c/latin-700.css";
+import "@fontsource/m-plus-rounded-1c/japanese-400.css";
+import "@fontsource/m-plus-rounded-1c/japanese-500.css";
+import "@fontsource/m-plus-rounded-1c/japanese-700.css";
 import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "../consts";
 import {
   OG_IMAGE_VERSION,
@@ -81,12 +94,6 @@ const navItems = [
       ogType === "article" &&
         tags.map((tag) => <meta property="article:tag" content={tag} />)
     }
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
     <a

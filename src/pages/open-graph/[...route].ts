@@ -260,12 +260,12 @@ const ensureCardFrameImage = async (): Promise<string> => {
 const cardFramePath = await ensureCardFrameImage();
 
 const ogFonts = [
-  "https://cdn.jsdelivr.net/fontsource/fonts/fredoka@latest/latin-500-normal.ttf",
-  "https://cdn.jsdelivr.net/fontsource/fonts/fredoka@latest/latin-700-normal.ttf",
-  "https://cdn.jsdelivr.net/fontsource/fonts/m-plus-rounded-1c@latest/japanese-500-normal.ttf",
-  "https://cdn.jsdelivr.net/fontsource/fonts/m-plus-rounded-1c@latest/latin-500-normal.ttf",
-  "https://cdn.jsdelivr.net/fontsource/fonts/m-plus-rounded-1c@latest/japanese-700-normal.ttf",
-  "https://cdn.jsdelivr.net/fontsource/fonts/m-plus-rounded-1c@latest/latin-700-normal.ttf",
+  "https://cdn.jsdelivr.net/fontsource/fonts/fredoka@5.2.10/latin-500-normal.ttf",
+  "https://cdn.jsdelivr.net/fontsource/fonts/fredoka@5.2.10/latin-700-normal.ttf",
+  "https://cdn.jsdelivr.net/fontsource/fonts/m-plus-rounded-1c@5.2.10/japanese-500-normal.ttf",
+  "https://cdn.jsdelivr.net/fontsource/fonts/m-plus-rounded-1c@5.2.10/latin-500-normal.ttf",
+  "https://cdn.jsdelivr.net/fontsource/fonts/m-plus-rounded-1c@5.2.10/japanese-700-normal.ttf",
+  "https://cdn.jsdelivr.net/fontsource/fonts/m-plus-rounded-1c@5.2.10/latin-700-normal.ttf",
 ];
 
 const bgGradient: [number, number, number][] = [

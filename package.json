@@ -15,6 +15,9 @@
     "lint": "pnpm run lint:eslint && pnpm run lint:stylelint"
   },
   "dependencies": {
+    "@fontsource/fredoka": "^5.2.10",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@fontsource/m-plus-rounded-1c": "^5.2.10",
     "svelte": "^5.49.1"
   },
   "devDependencies": {

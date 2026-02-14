@@ -21,7 +21,7 @@ const works = (await getCollection("works")).sort(
     </header>
 
     <div
-      class="flex flex-wrap items-center gap-3 rounded-full border border-sand-200 bg-white px-4 py-2 text-sm text-ink-600"
+      class="flex flex-wrap items-center gap-3 rounded-full border border-sand-200 bg-sand-50 px-4 py-2 text-sm text-ink-600"
       data-filter-banner
       hidden
     >
@@ -30,7 +30,7 @@ const works = (await getCollection("works")).sort(
         <strong class="font-semibold text-ink-800" data-filter-label></strong>
       </div>
       <a
-        class="ml-auto inline-flex items-center rounded-full border border-sand-200 bg-white px-3 py-1 text-xs font-semibold text-ink-600 transition hover:border-sage-500/40 hover:text-sage-700"
+        class="ml-auto inline-flex items-center rounded-full border border-sand-200 bg-sand-50 px-3 py-1 text-xs font-semibold text-ink-600 transition hover:border-sage-500/40 hover:text-sage-700"
         href="/works"
       >
         解除
@@ -41,7 +41,7 @@ const works = (await getCollection("works")).sort(
       {
         works.map((work) => (
           <article
-            class="group relative flex h-full cursor-pointer flex-col gap-4 rounded-2xl border border-sand-200 bg-white p-5 transition hover:border-sage-500/40 hover:shadow-soft focus-within:ring-2 focus-within:ring-sage-500/40"
+            class="group relative flex h-full cursor-pointer flex-col gap-4 rounded-2xl border border-sand-200 bg-sand-50 p-5 transition hover:border-sage-500/40 hover:shadow-soft focus-within:ring-2 focus-within:ring-sage-500/40"
             data-card-link
             data-href={`/works/${work.id}`}
             data-tags={work.data.tags?.join(",") ?? ""}

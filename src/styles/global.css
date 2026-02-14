@@ -1,5 +1,10 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+  themes: all;
+  /* Workaround for daisyUI#3882: nested @property warns during CSS optimization. */
+  exclude: properties;
+}
 @source "../**/*.{astro,html,js,jsx,ts,tsx,svelte,md,mdx}";
 
 @theme {
@@ -7,38 +12,77 @@
   --font-display: "Fredoka", "M PLUS Rounded 1c", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --color-ink-900: #3a2a35;
-  --color-ink-800: #4a3644;
-  --color-ink-700: #6b5564;
-  --color-ink-600: #7f6a76;
-  --color-ink-500: #9b8793;
+  --color-ink-900: var(--color-base-content);
+  --color-ink-800: color-mix(
+    in oklab,
+    var(--color-base-content) 88%,
+    var(--color-base-100)
+  );
+  --color-ink-700: color-mix(
+    in oklab,
+    var(--color-base-content) 76%,
+    var(--color-base-100)
+  );
+  --color-ink-600: color-mix(
+    in oklab,
+    var(--color-base-content) 64%,
+    var(--color-base-100)
+  );
+  --color-ink-500: color-mix(
+    in oklab,
+    var(--color-base-content) 52%,
+    var(--color-base-100)
+  );
 
-  --color-sand-50: #ffffff;
-  --color-sand-100: #f8f8f8;
-  --color-sand-200: #ededed;
-  --color-sand-300: #e0e0e0;
+  --color-sand-50: var(--color-base-100);
+  --color-sand-100: var(--color-base-200);
+  --color-sand-200: var(--color-base-300);
+  --color-sand-300: color-mix(
+    in oklab,
+    var(--color-base-300) 72%,
+    var(--color-base-content)
+  );
 
-  --color-sage-500: #4db39f;
-  --color-sage-600: #3fa08e;
-  --color-sage-700: #2f8071;
+  --color-sage-500: var(--color-primary);
+  --color-sage-600: color-mix(
+    in oklab,
+    var(--color-primary) 85%,
+    var(--color-base-content)
+  );
+  --color-sage-700: color-mix(
+    in oklab,
+    var(--color-primary) 70%,
+    var(--color-base-content)
+  );
 
-  --color-clay-300: #f7d59a;
-  --color-clay-400: #f1c36e;
-  --color-clay-500: #e9b255;
-  --color-clay-600: #dca043;
+  --color-clay-300: var(--color-secondary);
+  --color-clay-400: color-mix(
+    in oklab,
+    var(--color-secondary) 88%,
+    var(--color-base-content)
+  );
+  --color-clay-500: color-mix(
+    in oklab,
+    var(--color-secondary) 76%,
+    var(--color-base-content)
+  );
+  --color-clay-600: color-mix(
+    in oklab,
+    var(--color-secondary) 64%,
+    var(--color-base-content)
+  );
 
-  --shadow-soft: 0 6px 16px rgba(58, 42, 53, 0.08);
-  --shadow-lift: 0 10px 22px rgba(58, 42, 53, 0.1);
-  --shadow-glow: 0 10px 18px rgba(95, 199, 177, 0.2);
+  --shadow-soft: 0 6px 16px
+    color-mix(in oklab, var(--color-base-content) 12%, transparent);
+  --shadow-lift: 0 10px 22px
+    color-mix(in oklab, var(--color-base-content) 16%, transparent);
+  --shadow-glow: 0 10px 18px
+    color-mix(in oklab, var(--color-primary) 30%, transparent);
 
   --radius-4xl: 2rem;
 }
 
 @layer base {
-  :root {
-    color-scheme: light;
-  }
-
   * {
     box-sizing: border-box;
   }
@@ -72,7 +116,11 @@
   }
 
   ::selection {
-    background-color: rgba(237, 237, 237, 1);
+    background-color: color-mix(
+      in oklab,
+      var(--color-base-content) 18%,
+      var(--color-base-100)
+    );
   }
 }
 

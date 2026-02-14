@@ -12,14 +12,14 @@ const buildHref = (tag: string) =>
 			<li>
 				{#if basePath}
 					<a
-						class="inline-flex items-center rounded-full border border-sand-200 bg-white px-3 py-1 text-xs font-semibold text-ink-600 transition hover:border-sage-500/40 hover:text-sage-700"
+						class="inline-flex items-center rounded-full border border-sand-200 bg-sand-50 px-3 py-1 text-xs font-semibold text-ink-600 transition hover:border-sage-500/40 hover:text-sage-700"
 						href={buildHref(tag)}
 					>
 						{tag}
 					</a>
 				{:else}
 					<span
-						class="inline-flex items-center rounded-full border border-sand-200 bg-white px-3 py-1 text-xs font-semibold text-ink-600"
+						class="inline-flex items-center rounded-full border border-sand-200 bg-sand-50 px-3 py-1 text-xs font-semibold text-ink-600"
 					>
 						{tag}
 					</span>

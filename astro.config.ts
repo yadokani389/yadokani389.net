@@ -5,6 +5,8 @@ import { defineConfig } from "astro/config";
 import process from "node:process";
 import { SITE_URL } from "./src/consts";
 import rehypeBudoux from "./src/lib/rehype-budoux";
+import remarkRuby from "remark-denden-ruby";
+import remarkGemoji from "remark-gemoji";
 
 // https://astro.build/config
 export default defineConfig({
@@ -14,6 +16,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   markdown: {
+    remarkPlugins: [remarkRuby, remarkGemoji],
     rehypePlugins: [rehypeBudoux],
   },
 });

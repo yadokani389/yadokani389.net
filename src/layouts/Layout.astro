@@ -97,6 +97,22 @@ const daisyThemes = [
   "abyss",
   "silk",
 ];
+const darkThemeModes = [
+  "dark",
+  "synthwave",
+  "halloween",
+  "forest",
+  "aqua",
+  "black",
+  "luxury",
+  "dracula",
+  "business",
+  "night",
+  "coffee",
+  "dim",
+  "sunset",
+  "abyss",
+];
 const themeStorageKey = "theme-preference";
 const themePickerId = "theme-picker";
 const themeModes = ["system", ...daisyThemes];
@@ -112,10 +128,21 @@ const formatThemeLabel = (theme: string) =>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <script is:inline define:vars={{ daisyThemes, themeStorageKey }}>
+    <script
+      is:inline
+      define:vars={{ daisyThemes, darkThemeModes, themeStorageKey }}
+    >
       (() => {
         const resolveTheme = (mode, prefersDark) =>
           mode === "system" ? (prefersDark ? "dark" : "light") : mode;
+        const resolveColorScheme = (mode, prefersDark) =>
+          mode === "system"
+            ? prefersDark
+              ? "dark"
+              : "light"
+            : darkThemeModes.includes(mode)
+              ? "dark"
+              : "light";
         const isValidMode = (mode) =>
           mode === "system" || daisyThemes.includes(mode);
 
@@ -131,9 +158,11 @@ const formatThemeLabel = (theme: string) =>
           "(prefers-color-scheme: dark)",
         ).matches;
         const initialTheme = resolveTheme(initialMode, prefersDark);
+        const initialColorScheme = resolveColorScheme(initialMode, prefersDark);
 
         document.documentElement.setAttribute("data-theme", initialTheme);
         document.documentElement.dataset.themeMode = initialMode;
+        document.documentElement.dataset.colorScheme = initialColorScheme;
       })();
     </script>
     <link rel="icon" type="image/png" href="/favicon.png" />
@@ -336,12 +365,30 @@ const formatThemeLabel = (theme: string) =>
         </div>
       </div>
     </footer>
-    <script is:inline define:vars={{ daisyThemes, themeStorageKey }}>
+    <script
+      is:inline
+      define:vars={{ daisyThemes, darkThemeModes, themeStorageKey }}
+    >
       (() => {
         const resolveTheme = (mode, prefersDark) =>
           mode === "system" ? (prefersDark ? "dark" : "light") : mode;
         const isValidMode = (mode) =>
           mode === "system" || daisyThemes.includes(mode);
+        const detectColorScheme = (mode) => {
+          if (mode === "system") {
+            return themeMediaQuery.matches ? "dark" : "light";
+          }
+          const cssColorScheme = getComputedStyle(
+            document.documentElement,
+          ).colorScheme;
+          if (cssColorScheme.includes("dark")) {
+            return "dark";
+          }
+          if (cssColorScheme.includes("light")) {
+            return "light";
+          }
+          return darkThemeModes.includes(mode) ? "dark" : "light";
+        };
         const getThemePreview = (probe, mode, prefersDark) => {
           const resolved = resolveTheme(mode, prefersDark);
           probe.setAttribute("data-theme", resolved);
@@ -460,6 +507,8 @@ const formatThemeLabel = (theme: string) =>
 
           document.documentElement.setAttribute("data-theme", resolvedTheme);
           document.documentElement.dataset.themeMode = safeMode;
+          document.documentElement.dataset.colorScheme =
+            detectColorScheme(safeMode);
           updateThemePickerState(safeMode);
 
           if (shouldPersist) {

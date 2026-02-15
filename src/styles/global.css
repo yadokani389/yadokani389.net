@@ -173,6 +173,57 @@
   .prose blockquote {
     @apply border-l-4 border-clay-400 text-ink-600;
   }
+
+  .prose .remark-link-card-plus__container {
+    @apply w-full max-w-full;
+    margin: 0.875rem 0;
+  }
+
+  .prose .remark-link-card-plus__card {
+    @apply flex w-full max-w-full flex-col gap-1.5 overflow-hidden rounded-xl border border-sand-200 bg-sand-50 px-3.5 py-2.5 !no-underline transition hover:border-sage-500/40 hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500/40;
+  }
+
+  .prose .remark-link-card-plus__main {
+    @apply flex min-w-0 w-full flex-col gap-1.5;
+  }
+
+  .prose .remark-link-card-plus__content {
+    @apply flex min-w-0 flex-col gap-1.5;
+  }
+
+  .prose .remark-link-card-plus__title {
+    @apply m-0 text-xl font-semibold leading-tight text-ink-900 no-underline;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .prose .remark-link-card-plus__description {
+    @apply m-0 text-[0.98rem] leading-snug text-ink-600 no-underline;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .prose .remark-link-card-plus__meta {
+    @apply flex items-center gap-2 text-[0.98rem] font-medium text-ink-500;
+  }
+
+  .prose .remark-link-card-plus__favicon {
+    @apply m-0 h-[18px] w-[18px] shrink-0 self-center rounded-sm border border-sand-200;
+    margin: 0 !important;
+    margin-block: 0 !important;
+  }
+
+  .prose .remark-link-card-plus__url {
+    @apply truncate no-underline;
+  }
+
+  .prose .remark-link-card-plus__card:hover .remark-link-card-plus__title {
+    @apply text-sage-700;
+  }
 }
 
 [data-budoux] {

@@ -5,6 +5,7 @@ import { defineConfig } from "astro/config";
 import process from "node:process";
 import { SITE_URL } from "./src/consts";
 import rehypeBudoux from "./src/lib/rehype-budoux";
+import remarkLinkCard from "remark-link-card-plus";
 import remarkRuby from "remark-denden-ruby";
 import remarkGemoji from "remark-gemoji";
 
@@ -22,7 +23,19 @@ export default defineConfig({
         dark: "github-dark",
       },
     },
-    remarkPlugins: [remarkRuby, remarkGemoji],
+    remarkPlugins: [
+      remarkRuby,
+      remarkGemoji,
+      [
+        remarkLinkCard,
+        {
+          cache: true,
+          noFavicon: false,
+          noThumbnail: true,
+          shortenUrl: true,
+        },
+      ],
+    ],
     rehypePlugins: [rehypeBudoux],
   },
 });

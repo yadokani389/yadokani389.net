@@ -3,6 +3,7 @@ import { getCollection, getEntry, render } from "astro:content";
 import TagList from "../../components/TagList.svelte";
 import Budoux from "../../components/Budoux.astro";
 import Layout from "../../layouts/Layout.astro";
+import { formatDate } from "../../utils/formatDate";
 
 export async function getStaticPaths() {
   const works = await getCollection("works");
@@ -14,10 +15,20 @@ const work = await getEntry("works", slug);
 if (!work) {
   throw new Error(`Work not found: ${slug}`);
 }
+const showUpdatedDate =
+  work.data.lastmod !== undefined &&
+  work.data.lastmod.getTime() !== work.data.date.getTime();
 const { Content } = await render(work);
 ---
 
-<Layout title={work.data.title} description={work.data.description}>
+<Layout
+  title={work.data.title}
+  description={work.data.description}
+  ogType="article"
+  publishedTime={work.data.date.toISOString()}
+  modifiedTime={work.data.lastmod?.toISOString()}
+  tags={work.data.tags ?? []}
+>
   <div class="mx-auto flex max-w-4xl flex-col gap-8">
     <a
       class="inline-flex items-center gap-2 text-sm font-semibold text-ink-600 hover:text-sage-600"
@@ -33,6 +44,26 @@ const { Content } = await render(work);
       <p data-budoux class="text-lg text-ink-600">
         <Budoux text={work.data.description} />
       </p>
+      <div
+        class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-500"
+      >
+        <div>
+          公開日:
+          <time class="ml-1" datetime={work.data.date.toISOString()}
+            >{formatDate(work.data.date)}</time
+          >
+        </div>
+        {
+          showUpdatedDate && work.data.lastmod && (
+            <div>
+              最終更新:
+              <time class="ml-1" datetime={work.data.lastmod.toISOString()}>
+                {formatDate(work.data.lastmod)}
+              </time>
+            </div>
+          )
+        }
+      </div>
     </header>
 
     {

@@ -8,6 +8,7 @@ const works = defineCollection({
     title: z.string(),
     description: z.string(),
     date: z.date(),
+    lastmod: z.date().optional(),
     tags: z.array(z.string()).optional(),
     external_url: z.string().optional(),
     thumbnail: z.string().optional(),
@@ -21,6 +22,7 @@ const blog = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.date(),
+    lastmod: z.date().optional(),
     description: z.string(),
     tags: z.array(z.string()),
     draft: z.boolean().optional(),

@@ -15,6 +15,9 @@ const post = await getEntry("blog", slug);
 if (!post) {
   throw new Error(`Post not found: ${slug}`);
 }
+const showUpdatedDate =
+  post.data.lastmod !== undefined &&
+  post.data.lastmod.getTime() !== post.data.date.getTime();
 const { Content } = await render(post);
 ---
 
@@ -23,6 +26,7 @@ const { Content } = await render(post);
   description={post.data.description}
   ogType="article"
   publishedTime={post.data.date.toISOString()}
+  modifiedTime={post.data.lastmod?.toISOString()}
   tags={post.data.tags}
 >
   <div class="mx-auto flex max-w-3xl flex-col gap-8">
@@ -40,10 +44,25 @@ const { Content } = await render(post);
       <p data-budoux class="text-lg text-ink-600">
         <Budoux text={post.data.description} />
       </p>
-      <div class="text-sm text-ink-500">
-        <time datetime={post.data.date.toISOString()}
-          >{formatDate(post.data.date)}</time
-        >
+      <div
+        class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-500"
+      >
+        <div>
+          公開日:
+          <time class="ml-1" datetime={post.data.date.toISOString()}
+            >{formatDate(post.data.date)}</time
+          >
+        </div>
+        {
+          showUpdatedDate && post.data.lastmod && (
+            <div>
+              最終更新:
+              <time class="ml-1" datetime={post.data.lastmod.toISOString()}>
+                {formatDate(post.data.lastmod)}
+              </time>
+            </div>
+          )
+        }
       </div>
     </header>
     <div class="mt-1">

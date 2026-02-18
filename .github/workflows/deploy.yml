@@ -38,7 +38,7 @@ jobs:
             ${{ runner.os }}-pnpm-
 
       - name: Install dependencies
-        run: nix profile add .#ci && pnpm install --frozen-lockfile
+        run: nix profile add .#ci && pnpm install --frozen-lockfile --prod
 
       - name: Build the project
         run: pnpm run build

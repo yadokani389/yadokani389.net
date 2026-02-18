@@ -24,6 +24,14 @@ jobs:
           restore-prefixes-first-match: nix-${{ runner.os }}
           gc-max-store-size-linux: 5G
 
+      - name: Setup pnpm cache
+        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        with:
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-dev-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-dev-
+
       - name: Install dependencies
         run: nix profile add .#ci && pnpm install --frozen-lockfile
 

@@ -208,6 +208,10 @@
     @apply border-l-4 border-clay-400 text-ink-600;
   }
 
+  .prose svg.typst-doc {
+    display: inline-block;
+  }
+
   .prose .remark-link-card-plus__container {
     @apply w-full max-w-full;
     margin: 0.875rem 0;

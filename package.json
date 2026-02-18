@@ -25,6 +25,7 @@
     "@fontsource/fredoka": "^5.2.10",
     "@fontsource/jetbrains-mono": "^5.2.8",
     "@fontsource/m-plus-rounded-1c": "^5.2.10",
+    "@myriaddreamin/rehype-typst": "0.7.0-rc2",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "6.0.0-beta.11",
@@ -36,6 +37,7 @@
     "remark-denden-ruby": "^0.3.1",
     "remark-gemoji": "^8.0.0",
     "remark-link-card-plus": "^0.7.3",
+    "remark-math": "6.0.0",
     "svelte": "^5.51.3",
     "tailwindcss": "^4.1.18",
     "unist-util-visit": "^5.1.0"

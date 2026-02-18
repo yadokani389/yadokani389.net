@@ -7,9 +7,11 @@ import { SITE_URL } from "./src/consts";
 import rehypeBudoux from "./src/lib/rehype-budoux";
 import remarkCodeFilename from "./src/lib/remark-code-filename";
 import shikiCodeFilenameTransformer from "./src/lib/shiki-code-filename-transformer";
+import rehypeTypst from "@myriaddreamin/rehype-typst";
 import remarkLinkCard from "remark-link-card-plus";
 import remarkRuby from "remark-denden-ruby";
 import remarkGemoji from "remark-gemoji";
+import remarkMath from "remark-math";
 
 // https://astro.build/config
 export default defineConfig({
@@ -28,6 +30,7 @@ export default defineConfig({
     },
     remarkPlugins: [
       remarkCodeFilename,
+      remarkMath,
       remarkRuby,
       remarkGemoji,
       [
@@ -40,6 +43,6 @@ export default defineConfig({
         },
       ],
     ],
-    rehypePlugins: [rehypeBudoux],
+    rehypePlugins: [rehypeBudoux, rehypeTypst],
   },
 });

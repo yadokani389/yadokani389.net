@@ -64,7 +64,6 @@ const navItems = [
   { href: "/about", label: "About" },
 ];
 const themeStorageKey = "theme-preference";
-const themePickerId = "theme-picker";
 const defaultThemeMode = "retro";
 const themeModes = ["system", ...daisyThemes];
 const formatThemeLabel = (theme: string) =>
@@ -191,7 +190,7 @@ const formatThemeLabel = (theme: string) =>
               ))
             }
           </nav>
-          <details id={themePickerId} class="relative">
+          <details data-theme-picker class="relative">
             <summary
               class="flex h-8 list-none items-center gap-2 rounded-full border border-sand-300 bg-sand-50 px-3 text-xs font-semibold text-ink-700 shadow-soft transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none [&::-webkit-details-marker]:hidden"
               aria-label="テーマを選択"
@@ -382,7 +381,7 @@ const formatThemeLabel = (theme: string) =>
         const themeMediaQuery = window.matchMedia(
           "(prefers-color-scheme: dark)",
         );
-        const themePicker = document.getElementById("theme-picker");
+        const themePicker = document.querySelector("[data-theme-picker]");
         const themeCurrentLabel = document.querySelector(
           "[data-theme-current-label]",
         );

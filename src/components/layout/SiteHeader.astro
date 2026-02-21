@@ -1,0 +1,113 @@
+---
+interface NavItem {
+  href: string;
+  label: string;
+}
+
+interface ThemeModeOption {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  siteTitle: string;
+  normalizedPath: string;
+  navItems: NavItem[];
+  defaultThemeLabel: string;
+  themeModeOptions: ThemeModeOption[];
+}
+
+const {
+  siteTitle,
+  normalizedPath,
+  navItems,
+  defaultThemeLabel,
+  themeModeOptions,
+} = Astro.props as Props;
+---
+
+<header class="sticky top-0 z-20 border-b border-sand-200 bg-sand-50">
+  <div
+    class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-4"
+  >
+    <a class="text-lg font-display font-semibold text-ink-900" href="/">
+      {siteTitle}
+    </a>
+    <div class="flex flex-wrap items-center justify-end gap-3">
+      <nav class="flex flex-wrap items-center gap-3 text-sm" aria-label="Main">
+        {
+          navItems.map((item) => (
+            <a
+              href={item.href}
+              class:list={{
+                "inline-flex h-8 items-center border-b-2 border-transparent px-1 text-sm font-semibold transition": true,
+                "border-sage-500 text-ink-900": normalizedPath === item.href,
+                "text-ink-500 hover:text-ink-900": normalizedPath !== item.href,
+              }}
+              aria-current={normalizedPath === item.href ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+      <details data-theme-picker class="relative">
+        <summary
+          class="flex h-8 list-none items-center gap-2 rounded-full border border-sand-300 bg-sand-50 px-3 text-xs font-semibold text-ink-700 shadow-soft transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none [&::-webkit-details-marker]:hidden"
+          aria-label="テーマを選択"
+        >
+          <span data-theme-current-label>{defaultThemeLabel}</span>
+          <span class="inline-flex items-center gap-1" aria-hidden="true">
+            <span
+              class="h-2.5 w-2.5 rounded-full border border-sand-300"
+              data-theme-current-chip="base"></span>
+            <span
+              class="h-2.5 w-2.5 rounded-full border border-sand-300"
+              data-theme-current-chip="primary"></span>
+            <span
+              class="h-2.5 w-2.5 rounded-full border border-sand-300"
+              data-theme-current-chip="secondary"></span>
+          </span>
+          <span aria-hidden="true">▾</span>
+        </summary>
+        <div
+          class="absolute right-0 z-40 mt-2 w-64 rounded-2xl border border-sand-200 bg-sand-50 p-2 shadow-lift"
+        >
+          <ul class="max-h-80 space-y-1 overflow-auto pr-1">
+            {
+              themeModeOptions.map((theme) => (
+                <li>
+                  <button
+                    type="button"
+                    data-theme-value={theme.value}
+                    data-theme-label={theme.label}
+                    class="flex w-full items-center justify-between rounded-xl border border-sand-200 bg-sand-50 px-3 py-2 text-left text-xs font-semibold text-ink-700 transition hover:border-sage-500/40 hover:bg-sand-100"
+                  >
+                    <span>{theme.label}</span>
+                    <span
+                      class="inline-flex items-center gap-1"
+                      aria-hidden="true"
+                    >
+                      <span
+                        class="h-2.5 w-2.5 rounded-full border border-sand-300"
+                        data-theme-preview-chip="base"
+                      />
+                      <span
+                        class="h-2.5 w-2.5 rounded-full border border-sand-300"
+                        data-theme-preview-chip="primary"
+                      />
+                      <span
+                        class="h-2.5 w-2.5 rounded-full border border-sand-300"
+                        data-theme-preview-chip="secondary"
+                      />
+                    </span>
+                  </button>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>

@@ -19,6 +19,8 @@ import {
   STATIC_OG_IMAGE_BY_PATH,
 } from "../seo/pageMeta";
 import { daisyThemes, darkThemeModes } from "../lib/daisyThemes";
+import SiteFooter from "../components/layout/SiteFooter.astro";
+import SiteHeader from "../components/layout/SiteHeader.astro";
 import "../styles/global.css";
 
 interface Props {
@@ -71,6 +73,10 @@ const formatThemeLabel = (theme: string) =>
     .split("-")
     .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
     .join(" ");
+const themeModeOptions = themeModes.map((theme) => ({
+  value: theme,
+  label: formatThemeLabel(theme),
+}));
 ---
 
 <!doctype html>
@@ -158,175 +164,17 @@ const formatThemeLabel = (theme: string) =>
       class="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:z-50 focus:rounded-full focus:bg-sand-50 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink-900 focus:shadow-soft focus:ring-2 focus:ring-sage-500/40"
       href="#main">本文へスキップ</a
     >
-    <header class="sticky top-0 z-20 border-b border-sand-200 bg-sand-50">
-      <div
-        class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-4"
-      >
-        <a class="text-lg font-display font-semibold text-ink-900" href="/">
-          {SITE_TITLE}
-        </a>
-        <div class="flex flex-wrap items-center justify-end gap-3">
-          <nav
-            class="flex flex-wrap items-center gap-3 text-sm"
-            aria-label="Main"
-          >
-            {
-              navItems.map((item) => (
-                <a
-                  href={item.href}
-                  class:list={{
-                    "inline-flex h-8 items-center border-b-2 border-transparent px-1 text-sm font-semibold transition": true,
-                    "border-sage-500 text-ink-900":
-                      normalizedPath === item.href,
-                    "text-ink-500 hover:text-ink-900":
-                      normalizedPath !== item.href,
-                  }}
-                  aria-current={
-                    normalizedPath === item.href ? "page" : undefined
-                  }
-                >
-                  {item.label}
-                </a>
-              ))
-            }
-          </nav>
-          <details data-theme-picker class="relative">
-            <summary
-              class="flex h-8 list-none items-center gap-2 rounded-full border border-sand-300 bg-sand-50 px-3 text-xs font-semibold text-ink-700 shadow-soft transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none [&::-webkit-details-marker]:hidden"
-              aria-label="テーマを選択"
-            >
-              <span data-theme-current-label
-                >{formatThemeLabel(defaultThemeMode)}</span
-              >
-              <span class="inline-flex items-center gap-1" aria-hidden="true">
-                <span
-                  class="h-2.5 w-2.5 rounded-full border border-sand-300"
-                  data-theme-current-chip="base"></span>
-                <span
-                  class="h-2.5 w-2.5 rounded-full border border-sand-300"
-                  data-theme-current-chip="primary"></span>
-                <span
-                  class="h-2.5 w-2.5 rounded-full border border-sand-300"
-                  data-theme-current-chip="secondary"></span>
-              </span>
-              <span aria-hidden="true">▾</span>
-            </summary>
-            <div
-              class="absolute right-0 z-40 mt-2 w-64 rounded-2xl border border-sand-200 bg-sand-50 p-2 shadow-lift"
-            >
-              <ul class="max-h-80 space-y-1 overflow-auto pr-1">
-                {
-                  themeModes.map((theme) => (
-                    <li>
-                      <button
-                        type="button"
-                        data-theme-value={theme}
-                        data-theme-label={formatThemeLabel(theme)}
-                        class="flex w-full items-center justify-between rounded-xl border border-sand-200 bg-sand-50 px-3 py-2 text-left text-xs font-semibold text-ink-700 transition hover:border-sage-500/40 hover:bg-sand-100"
-                      >
-                        <span>{formatThemeLabel(theme)}</span>
-                        <span
-                          class="inline-flex items-center gap-1"
-                          aria-hidden="true"
-                        >
-                          <span
-                            class="h-2.5 w-2.5 rounded-full border border-sand-300"
-                            data-theme-preview-chip="base"
-                          />
-                          <span
-                            class="h-2.5 w-2.5 rounded-full border border-sand-300"
-                            data-theme-preview-chip="primary"
-                          />
-                          <span
-                            class="h-2.5 w-2.5 rounded-full border border-sand-300"
-                            data-theme-preview-chip="secondary"
-                          />
-                        </span>
-                      </button>
-                    </li>
-                  ))
-                }
-              </ul>
-            </div>
-          </details>
-        </div>
-      </div>
-    </header>
+    <SiteHeader
+      siteTitle={SITE_TITLE}
+      normalizedPath={normalizedPath}
+      {navItems}
+      defaultThemeLabel={formatThemeLabel(defaultThemeMode)}
+      {themeModeOptions}
+    />
     <main id="main" class="flex-1 px-6 pb-20 pt-8">
       <slot />
     </main>
-    <footer class="border-t border-sand-200 bg-sand-50/70">
-      <div
-        class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-10 text-sm text-ink-600"
-      >
-        <div
-          class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-500"
-        >
-          <span>© 2026 {SITE_TITLE}</span>
-          <span aria-hidden="true">·</span>
-          <span>
-            License: Blog Content
-            <a
-              class="font-semibold text-ink-600 hover:text-sage-600"
-              href="https://creativecommons.org/licenses/by-sa/4.0/"
-              >CC BY-SA 4.0</a
-            > · Code
-            <a
-              class="font-semibold text-ink-600 hover:text-sage-600"
-              href="https://opensource.org/license/MIT">MIT</a
-            >
-          </span>
-        </div>
-        <div class="flex items-center gap-4">
-          <a
-            class="inline-flex items-center gap-2 text-ink-600 transition hover:text-sage-600"
-            href="https://github.com/yadokani389"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub"
-          >
-            <svg class="h-6 w-6" viewBox="0 0 640 640" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M237.9 461.4C237.9 463.4 235.6 465 232.7 465C229.4 465.3 227.1 463.7 227.1 461.4C227.1 459.4 229.4 457.8 232.3 457.8C235.3 457.5 237.9 459.1 237.9 461.4zM206.8 456.9C206.1 458.9 208.1 461.2 211.1 461.8C213.7 462.8 216.7 461.8 217.3 459.8C217.9 457.8 216 455.5 213 454.6C210.4 453.9 207.5 454.9 206.8 456.9zM251 455.2C248.1 455.9 246.1 457.8 246.4 460.1C246.7 462.1 249.3 463.4 252.3 462.7C255.2 462 257.2 460.1 256.9 458.1C256.6 456.2 253.9 454.9 251 455.2zM316.8 72C178.1 72 72 177.3 72 316C72 426.9 141.8 521.8 241.5 555.2C254.3 557.5 258.8 549.6 258.8 543.1C258.8 536.9 258.5 502.7 258.5 481.7C258.5 481.7 188.5 496.7 173.8 451.9C173.8 451.9 162.4 422.8 146 415.3C146 415.3 123.1 399.6 147.6 399.9C147.6 399.9 172.5 401.9 186.2 425.7C208.1 464.3 244.8 453.2 259.1 446.6C261.4 430.6 267.9 419.5 275.1 412.9C219.2 406.7 162.8 398.6 162.8 302.4C162.8 274.9 170.4 261.1 186.4 243.5C183.8 237 175.3 210.2 189 175.6C209.9 169.1 258 202.6 258 202.6C278 197 299.5 194.1 320.8 194.1C342.1 194.1 363.6 197 383.6 202.6C383.6 202.6 431.7 169 452.6 175.6C466.3 210.3 457.8 237 455.2 243.5C471.2 261.2 481 275 481 302.4C481 398.9 422.1 406.6 366.2 412.9C375.4 420.8 383.2 435.8 383.2 459.3C383.2 493 382.9 534.7 382.9 542.9C382.9 549.4 387.5 557.3 400.2 555C500.2 521.8 568 426.9 568 316C568 177.3 455.5 72 316.8 72zM169.2 416.9C167.9 417.9 168.2 420.2 169.9 422.1C171.5 423.7 173.8 424.4 175.1 423.1C176.4 422.1 176.1 419.8 174.4 417.9C172.8 416.3 170.5 415.6 169.2 416.9zM158.4 408.8C157.7 410.1 158.7 411.7 160.7 412.7C162.3 413.7 164.3 413.4 165 412C165.7 410.7 164.7 409.1 162.7 408.1C160.7 407.5 159.1 407.8 158.4 408.8zM190.8 444.4C189.2 445.7 189.8 448.7 192.1 450.6C194.4 452.9 197.3 453.2 198.6 451.6C199.9 450.3 199.3 447.3 197.3 445.4C195.1 443.1 192.1 442.8 190.8 444.4zM179.4 429.7C177.8 430.7 177.8 433.3 179.4 435.6C181 437.9 183.7 438.9 185 437.9C186.6 436.6 186.6 434 185 431.7C183.6 429.4 181 428.4 179.4 429.7z"
-              ></path>
-            </svg>
-          </a>
-          <a
-            class="inline-flex items-center gap-2 text-ink-600 transition hover:text-sage-600"
-            href="https://x.com/yadokani389"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="X"
-          >
-            <svg class="h-6 w-6" viewBox="0 0 640 640" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M453.2 112L523.8 112L369.6 288.2L551 528L409 528L297.7 382.6L170.5 528L99.8 528L264.7 339.5L90.8 112L236.4 112L336.9 244.9L453.2 112zM428.4 485.8L467.5 485.8L215.1 152L173.1 152L428.4 485.8z"
-              ></path>
-            </svg>
-          </a>
-          <a
-            class="inline-flex items-center gap-2 text-ink-600 transition hover:text-sage-600"
-            href="https://zenn.dev/yadokani389"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Zenn"
-          >
-            <svg class="h-5 w-5" viewBox="0 0 88.3 88.3" aria-hidden="true">
-              <g fill="currentColor">
-                <path
-                  d="M3.9,83.3h17c0.9,0,1.7-0.5,2.2-1.2L69.9,5.2c0.6-1-0.1-2.2-1.3-2.2H52.5c-0.8,0-1.5,0.4-1.9,1.1L3.1,81.9C2.8,82.5,3.2,83.3,3.9,83.3z"
-                ></path>
-                <path
-                  d="M62.5,82.1l22.1-35.5c0.7-1.1-0.1-2.5-1.4-2.5h-16c-0.6,0-1.2,0.3-1.5,0.8L43,81.2c-0.6,0.9,0.1,2.1,1.2,2.1h16.3C61.3,83.3,62.1,82.9,62.5,82.1z"
-                ></path>
-              </g>
-            </svg>
-          </a>
-        </div>
-      </div>
-    </footer>
+    <SiteFooter siteTitle={SITE_TITLE} />
     <script
       is:inline
       id="theme-picker-config"

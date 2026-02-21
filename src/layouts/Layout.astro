@@ -519,32 +519,11 @@ const formatThemeLabel = (theme: string) =>
           themePicker.open = false;
         });
       })();
+    </script>
+    <script>
+      import { bootCardLinkNavigation } from "../lib/ui/cardLinkClient";
 
-      document.addEventListener("click", (event) => {
-        const target = event.target;
-        if (!(target instanceof Element)) return;
-        if (target.closest("a, button, input, textarea, select")) return;
-        const card = target.closest("[data-card-link]");
-        if (!card) return;
-        const href = card.getAttribute("data-href");
-        if (href) {
-          window.location.href = href;
-        }
-      });
-
-      document.addEventListener("keydown", (event) => {
-        if (event.key !== "Enter" && event.key !== " ") return;
-        const active = document.activeElement;
-        if (!(active instanceof Element)) return;
-        if (active.closest("a, button, input, textarea, select")) return;
-        const card = active.closest("[data-card-link]");
-        if (!card) return;
-        const href = card.getAttribute("data-href");
-        if (href) {
-          event.preventDefault();
-          window.location.href = href;
-        }
-      });
+      bootCardLinkNavigation();
     </script>
   </body>
 </html>

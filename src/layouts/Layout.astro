@@ -329,200 +329,26 @@ const formatThemeLabel = (theme: string) =>
     </footer>
     <script
       is:inline
-      define:vars={{
+      id="theme-picker-config"
+      type="application/json"
+      set:html={JSON.stringify({
         daisyThemes,
         darkThemeModes,
         themeStorageKey,
         defaultThemeMode,
-      }}
-    >
-      (() => {
-        const resolveTheme = (mode, prefersDark) =>
-          mode === "system" ? (prefersDark ? "dark" : "light") : mode;
-        const isValidMode = (mode) =>
-          mode === "system" || daisyThemes.includes(mode);
-        const detectColorScheme = (mode) => {
-          if (mode === "system") {
-            return themeMediaQuery.matches ? "dark" : "light";
-          }
-          const cssColorScheme = getComputedStyle(
-            document.documentElement,
-          ).colorScheme;
-          if (cssColorScheme.includes("dark")) {
-            return "dark";
-          }
-          if (cssColorScheme.includes("light")) {
-            return "light";
-          }
-          return darkThemeModes.includes(mode) ? "dark" : "light";
-        };
-        const getThemePreview = (probe, mode, prefersDark) => {
-          const resolved = resolveTheme(mode, prefersDark);
-          probe.setAttribute("data-theme", resolved);
-          const style = getComputedStyle(probe);
-          return {
-            base: style.getPropertyValue("--color-base-100").trim(),
-            primary: style.getPropertyValue("--color-primary").trim(),
-            secondary: style.getPropertyValue("--color-secondary").trim(),
-          };
-        };
-        const applyPreviewToChips = (chips, preview) => {
-          if (chips.base instanceof HTMLElement) {
-            chips.base.style.backgroundColor = preview.base;
-          }
-          if (chips.primary instanceof HTMLElement) {
-            chips.primary.style.backgroundColor = preview.primary;
-          }
-          if (chips.secondary instanceof HTMLElement) {
-            chips.secondary.style.backgroundColor = preview.secondary;
-          }
-        };
-
-        const themeMediaQuery = window.matchMedia(
-          "(prefers-color-scheme: dark)",
-        );
-        const themePicker = document.querySelector("[data-theme-picker]");
-        const themeCurrentLabel = document.querySelector(
-          "[data-theme-current-label]",
-        );
-        const themeCurrentChips = {
-          base: document.querySelector('[data-theme-current-chip="base"]'),
-          primary: document.querySelector(
-            '[data-theme-current-chip="primary"]',
-          ),
-          secondary: document.querySelector(
-            '[data-theme-current-chip="secondary"]',
-          ),
-        };
-        const themeOptions = Array.from(
-          document.querySelectorAll("[data-theme-value]"),
-        );
-        const themeLabels = new Map(
-          themeOptions
-            .map((option) => {
-              const mode = option.getAttribute("data-theme-value");
-              const label = option.getAttribute("data-theme-label");
-              if (!mode || !label) return null;
-              return [mode, label];
-            })
-            .filter(Boolean),
-        );
-        const previewProbe = document.createElement("div");
-        previewProbe.setAttribute("aria-hidden", "true");
-        previewProbe.style.position = "fixed";
-        previewProbe.style.opacity = "0";
-        previewProbe.style.pointerEvents = "none";
-        previewProbe.style.left = "-9999px";
-        previewProbe.style.top = "-9999px";
-        document.body.append(previewProbe);
-
-        const updateOptionPreviews = () => {
-          themeOptions.forEach((option) => {
-            const mode = option.getAttribute("data-theme-value");
-            if (!mode) return;
-            const preview = getThemePreview(
-              previewProbe,
-              mode,
-              themeMediaQuery.matches,
-            );
-            const chips = {
-              base: option.querySelector('[data-theme-preview-chip="base"]'),
-              primary: option.querySelector(
-                '[data-theme-preview-chip="primary"]',
-              ),
-              secondary: option.querySelector(
-                '[data-theme-preview-chip="secondary"]',
-              ),
-            };
-            applyPreviewToChips(chips, preview);
-          });
-        };
-
-        const updateThemePickerState = (mode) => {
-          const safeMode = isValidMode(mode) ? mode : defaultThemeMode;
-          themeOptions.forEach((option) => {
-            const optionMode = option.getAttribute("data-theme-value");
-            const isActive = optionMode === safeMode;
-            option.classList.toggle("border-sage-500/40", isActive);
-            option.classList.toggle("bg-sand-100", isActive);
-            option.classList.toggle("text-ink-900", isActive);
-          });
-          if (themeCurrentLabel instanceof HTMLElement) {
-            themeCurrentLabel.textContent =
-              themeLabels.get(safeMode) ?? defaultThemeMode;
-          }
-          const preview = getThemePreview(
-            previewProbe,
-            safeMode,
-            themeMediaQuery.matches,
-          );
-          applyPreviewToChips(themeCurrentChips, preview);
-        };
-
-        const getStoredMode = () => {
-          try {
-            const storedMode = localStorage.getItem(themeStorageKey);
-            return isValidMode(storedMode) ? storedMode : defaultThemeMode;
-          } catch {
-            return defaultThemeMode;
-          }
-        };
-
-        const applyThemeMode = (mode, shouldPersist) => {
-          const safeMode = isValidMode(mode) ? mode : defaultThemeMode;
-          const resolvedTheme = resolveTheme(safeMode, themeMediaQuery.matches);
-
-          document.documentElement.setAttribute("data-theme", resolvedTheme);
-          document.documentElement.dataset.themeMode = safeMode;
-          document.documentElement.dataset.colorScheme =
-            detectColorScheme(safeMode);
-          updateThemePickerState(safeMode);
-
-          if (shouldPersist) {
-            try {
-              localStorage.setItem(themeStorageKey, safeMode);
-            } catch {
-              return;
-            }
-          }
-        };
-
-        updateOptionPreviews();
-        applyThemeMode(getStoredMode(), false);
-
-        themeOptions.forEach((option) => {
-          option.addEventListener("click", () => {
-            const mode = option.getAttribute("data-theme-value");
-            if (!mode) return;
-            applyThemeMode(mode, true);
-            if (themePicker instanceof HTMLDetailsElement) {
-              themePicker.open = false;
-            }
-          });
-        });
-
-        themeMediaQuery.addEventListener("change", () => {
-          updateOptionPreviews();
-          if (document.documentElement.dataset.themeMode === "system") {
-            applyThemeMode("system", false);
-          } else {
-            updateThemePickerState(document.documentElement.dataset.themeMode);
-          }
-        });
-
-        document.addEventListener("click", (event) => {
-          if (!(themePicker instanceof HTMLDetailsElement)) return;
-          if (!themePicker.open) return;
-          const target = event.target;
-          if (!(target instanceof Node)) return;
-          if (themePicker.contains(target)) return;
-          themePicker.open = false;
-        });
-      })();
-    </script>
+      }).replaceAll("<", "\\u003c")}
+    />
     <script>
+      import {
+        bootThemePicker,
+        readThemePickerConfig,
+      } from "../lib/theme/themePickerClient";
       import { bootCardLinkNavigation } from "../lib/ui/cardLinkClient";
 
+      const config = readThemePickerConfig();
+      if (config) {
+        bootThemePicker(config);
+      }
       bootCardLinkNavigation();
     </script>
   </body>

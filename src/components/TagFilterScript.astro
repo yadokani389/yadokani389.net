@@ -1,30 +1,20 @@
 ---
 const { param = "tag" } = Astro.props;
+const safeConfigJson = JSON.stringify({ param }).replaceAll("<", "\\u003c");
 ---
 
-<script is:inline data-param={param}>
-  const currentScript = document.currentScript;
-  const paramName = currentScript?.dataset.param ?? "tag";
-  const params = new URLSearchParams(window.location.search);
-  const tag = params.get(paramName);
-  if (tag) {
-    const normalized = tag.toLowerCase();
-    const cards = Array.from(document.querySelectorAll("[data-tags]"));
-    cards.forEach((card) => {
-      const raw = card.getAttribute("data-tags") ?? "";
-      const tags = raw
-        .split(",")
-        .map((item) => item.trim().toLowerCase())
-        .filter(Boolean);
-      if (!tags.includes(normalized)) {
-        card.style.display = "none";
-      }
-    });
-    const banner = document.querySelector("[data-filter-banner]");
-    const label = document.querySelector("[data-filter-label]");
-    if (banner && label) {
-      label.textContent = tag;
-      banner.hidden = false;
-    }
-  }
+<script
+  is:inline
+  id="tag-filter-config"
+  type="application/json"
+  set:html={safeConfigJson}
+/>
+<script>
+  import {
+    applyTagFilter,
+    readTagFilterConfig,
+  } from "../lib/filter/tagFilterClient";
+
+  const config = readTagFilterConfig();
+  applyTagFilter(config?.param ?? "tag");
 </script>

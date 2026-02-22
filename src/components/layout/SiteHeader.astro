@@ -53,7 +53,7 @@ const {
       </nav>
       <details data-theme-picker class="relative">
         <summary
-          class="flex h-8 cursor-pointer select-none list-none items-center gap-2 rounded-full border border-sand-300 bg-sand-50 px-3 text-xs font-semibold text-ink-700 shadow-soft transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none [&::-webkit-details-marker]:hidden"
+          class="flex h-8 cursor-pointer select-none list-none items-center gap-2 rounded-full border border-sand-300 bg-sand-50 px-3 text-xs font-semibold text-ink-700 transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none [&::-webkit-details-marker]:hidden"
           aria-label="テーマを選択"
         >
           <span data-theme-current-label>{defaultThemeLabel}</span>
@@ -71,7 +71,7 @@ const {
           <span aria-hidden="true">▾</span>
         </summary>
         <div
-          class="absolute right-0 z-40 mt-2 w-64 rounded-2xl border border-sand-200 bg-sand-50 p-2 shadow-lift"
+          class="absolute right-0 z-40 mt-2 w-64 rounded-2xl border border-sand-200 bg-sand-50 p-2"
         >
           <ul class="max-h-80 space-y-1 overflow-auto pr-1">
             {
@@ -111,13 +111,13 @@ const {
 
       <details class="relative md:hidden">
         <summary
-          class="flex h-8 w-8 cursor-pointer select-none list-none items-center justify-center rounded-full border border-sand-300 bg-sand-50 text-ink-700 shadow-soft transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none [&::-webkit-details-marker]:hidden"
+          class="flex h-8 w-8 cursor-pointer select-none list-none items-center justify-center rounded-full border border-sand-300 bg-sand-50 text-ink-700 transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none [&::-webkit-details-marker]:hidden"
           aria-label="メニューを開く"
         >
           <span class="text-base leading-none" aria-hidden="true">☰</span>
         </summary>
         <div
-          class="absolute right-0 z-40 mt-2 w-52 rounded-2xl border border-sand-200 bg-sand-50 p-2 shadow-lift"
+          class="absolute right-0 z-40 mt-2 w-52 rounded-2xl border border-sand-200 bg-sand-50 p-2"
         >
           <nav class="flex flex-col" aria-label="Main mobile">
             {

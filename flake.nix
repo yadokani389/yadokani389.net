@@ -41,6 +41,16 @@
               prettier.enable = true;
               treefmt.enable = true;
               typos.enable = true;
+              lint = {
+                enable = true;
+                entry = "pnpm lint";
+                files = "\\.(js|ts|css|astro|svelte)$";
+              };
+              textlint = {
+                enable = true;
+                entry = "pnpm textlint";
+                files = "\\.(md|mdx)$";
+              };
             };
           };
 

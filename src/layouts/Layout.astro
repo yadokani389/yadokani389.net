@@ -68,6 +68,15 @@ const navItems = [
 const themeStorageKey = "theme-preference";
 const defaultThemeMode = "dim";
 const themeModes = ["system", ...daisyThemes];
+const fontSizeStorageKey = "font-size-preference";
+const defaultFontSizeMode = "normal";
+const fontSizeOptions = [
+  { value: "x-small", label: "80%" },
+  { value: "small", label: "90%" },
+  { value: "normal", label: "100%" },
+  { value: "large", label: "110%" },
+];
+const fontSizeModes = fontSizeOptions.map((option) => option.value);
 const formatThemeLabel = (theme: string) =>
   theme
     .split("-")
@@ -77,6 +86,9 @@ const themeModeOptions = themeModes.map((theme) => ({
   value: theme,
   label: formatThemeLabel(theme),
 }));
+const defaultFontSizeLabel =
+  fontSizeOptions.find((option) => option.value === defaultFontSizeMode)
+    ?.label ?? "100%";
 ---
 
 <!doctype html>
@@ -91,6 +103,9 @@ const themeModeOptions = themeModes.map((theme) => ({
         darkThemeModes,
         themeStorageKey,
         defaultThemeMode,
+        fontSizeStorageKey,
+        defaultFontSizeMode,
+        fontSizeModes,
       }}
     >
       (() => {
@@ -124,6 +139,19 @@ const themeModeOptions = themeModes.map((theme) => ({
         document.documentElement.setAttribute("data-theme", initialTheme);
         document.documentElement.dataset.themeMode = initialMode;
         document.documentElement.dataset.colorScheme = initialColorScheme;
+
+        const isValidFontSizeMode = (mode) => fontSizeModes.includes(mode);
+        let initialFontSizeMode = defaultFontSizeMode;
+        try {
+          const storedFontSizeMode = localStorage.getItem(fontSizeStorageKey);
+          initialFontSizeMode = isValidFontSizeMode(storedFontSizeMode)
+            ? storedFontSizeMode
+            : defaultFontSizeMode;
+        } catch {
+          initialFontSizeMode = defaultFontSizeMode;
+        }
+
+        document.documentElement.dataset.fontSize = initialFontSizeMode;
       })();
     </script>
     <link rel="icon" type="image/png" href="/favicon.png" />
@@ -170,6 +198,8 @@ const themeModeOptions = themeModes.map((theme) => ({
       {navItems}
       defaultThemeLabel={formatThemeLabel(defaultThemeMode)}
       {themeModeOptions}
+      {defaultFontSizeLabel}
+      {fontSizeOptions}
     />
     <main id="main" class="flex-1 px-6 pb-20 pt-8">
       <slot />
@@ -186,17 +216,37 @@ const themeModeOptions = themeModes.map((theme) => ({
         defaultThemeMode,
       }).replaceAll("<", "\\u003c")}
     />
+    <script
+      is:inline
+      id="font-size-picker-config"
+      type="application/json"
+      set:html={JSON.stringify({
+        fontSizeStorageKey,
+        defaultFontSizeMode,
+        fontSizeModes,
+      }).replaceAll("<", "\\u003c")}
+    />
     <script>
       import {
         bootThemePicker,
         readThemePickerConfig,
       } from "../lib/theme/themePickerClient";
       import { bootCardLinkNavigation } from "../lib/ui/cardLinkClient";
+      import {
+        bootFontSizePicker,
+        readFontSizePickerConfig,
+      } from "../lib/ui/fontSizePickerClient";
 
       const config = readThemePickerConfig();
       if (config) {
         bootThemePicker(config);
       }
+
+      const fontSizeConfig = readFontSizePickerConfig();
+      if (fontSizeConfig) {
+        bootFontSizePicker(fontSizeConfig);
+      }
+
       bootCardLinkNavigation();
     </script>
   </body>

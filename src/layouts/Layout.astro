@@ -236,6 +236,7 @@ const defaultFontSizeLabel =
         bootFontSizePicker,
         readFontSizePickerConfig,
       } from "../lib/ui/fontSizePickerClient";
+      import { bootMobileMenuDismiss } from "../lib/ui/mobileMenuClient";
 
       const config = readThemePickerConfig();
       if (config) {
@@ -247,6 +248,7 @@ const defaultFontSizeLabel =
         bootFontSizePicker(fontSizeConfig);
       }
 
+      bootMobileMenuDismiss();
       bootCardLinkNavigation();
     </script>
   </body>

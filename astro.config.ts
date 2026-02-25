@@ -1,4 +1,5 @@
 import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
@@ -16,7 +17,7 @@ import remarkMath from "remark-math";
 // https://astro.build/config
 export default defineConfig({
   site: process.env.SITE_URL || SITE_URL,
-  integrations: [svelte(), mdx()],
+  integrations: [sitemap(), svelte(), mdx()],
   vite: {
     plugins: [tailwindcss()],
   },

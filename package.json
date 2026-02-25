@@ -23,6 +23,7 @@
   "dependencies": {
     "@astrojs/mdx": "5.0.0-beta.7",
     "@astrojs/rss": "4.0.15-beta.4",
+    "@astrojs/sitemap": "3.7.0",
     "@astrojs/svelte": "8.0.0-beta.2",
     "@fontsource/fredoka": "^5.2.10",
     "@fontsource/jetbrains-mono": "^5.2.8",

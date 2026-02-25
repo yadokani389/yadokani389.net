@@ -45,11 +45,13 @@
                 enable = true;
                 entry = "pnpm lint";
                 files = "\\.(js|ts|css|astro|svelte)$";
+                pass_filenames = false;
               };
               textlint = {
                 enable = true;
                 entry = "pnpm textlint";
                 files = "\\.(md|mdx)$";
+                pass_filenames = false;
               };
             };
           };

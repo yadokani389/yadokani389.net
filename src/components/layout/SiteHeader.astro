@@ -33,6 +33,14 @@ const {
   defaultFontSizeLabel,
   fontSizeOptions,
 } = Astro.props as Props;
+
+const isCurrentNavItem = (href: string): boolean => {
+  if (href === "/") {
+    return normalizedPath === "/";
+  }
+
+  return normalizedPath === href || normalizedPath.startsWith(`${href}/`);
+};
 ---
 
 <header class="sticky top-0 z-20 border-b border-sand-200 bg-sand-50">
@@ -50,10 +58,10 @@ const {
               href={item.href}
               class:list={{
                 "inline-flex h-8 items-center border-b-2 border-transparent px-1 text-sm font-semibold transition": true,
-                "border-sage-500 text-ink-900": normalizedPath === item.href,
-                "text-ink-500 hover:text-ink-900": normalizedPath !== item.href,
+                "border-sage-500 text-ink-900": isCurrentNavItem(item.href),
+                "text-ink-500 hover:text-ink-900": !isCurrentNavItem(item.href),
               }}
-              aria-current={normalizedPath === item.href ? "page" : undefined}
+              aria-current={isCurrentNavItem(item.href) ? "page" : undefined}
             >
               {item.label}
             </a>
@@ -177,12 +185,12 @@ const {
                   href={item.href}
                   class:list={{
                     "rounded-xl px-3 py-2 text-sm font-semibold transition": true,
-                    "bg-sand-100 text-ink-900": normalizedPath === item.href,
+                    "bg-sand-100 text-ink-900": isCurrentNavItem(item.href),
                     "text-ink-600 hover:bg-sand-100 hover:text-ink-900":
-                      normalizedPath !== item.href,
+                      !isCurrentNavItem(item.href),
                   }}
                   aria-current={
-                    normalizedPath === item.href ? "page" : undefined
+                    isCurrentNavItem(item.href) ? "page" : undefined
                   }
                 >
                   {item.label}

@@ -1,9 +1,7 @@
 import { getCollection } from "astro:content";
 import type { OGPage } from "./types";
 
-export const buildOgPages = async (
-  staticPages: Record<string, OGPage>,
-): Promise<Record<string, OGPage>> => {
+export const buildOgPages = async (): Promise<Record<string, OGPage>> => {
   const blogPosts = await getCollection("blog", (post) => !post.data.draft);
   const works = await getCollection("works");
 
@@ -28,7 +26,6 @@ export const buildOgPages = async (
   );
 
   return {
-    ...staticPages,
     ...blogPages,
     ...workPages,
   };

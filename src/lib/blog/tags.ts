@@ -18,6 +18,7 @@ type BlogTagAccumulatorValue = {
 const sortByPublishDateDesc = (a: BlogPost, b: BlogPost): number =>
   b.data.date.getTime() - a.data.date.getTime();
 
+export const BLOG_INDEX_PAGE_SIZE = 6;
 export const BLOG_TAGS_PAGE_SIZE = 12;
 
 export const getPublishedBlogPosts = async (): Promise<BlogPost[]> => {

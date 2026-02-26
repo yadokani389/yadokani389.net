@@ -1,0 +1,116 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { GetStaticPathsOptions, Page } from "astro";
+import TagList from "../../components/TagList.svelte";
+import Layout from "../../layouts/Layout.astro";
+import { WORK_INDEX_PAGE_SIZE, getWorks } from "../../lib/works/tags";
+import { PAGE_META } from "../../seo/pageMeta";
+
+interface Props {
+  page: Page<CollectionEntry<"works">>;
+}
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const works = await getWorks();
+  return paginate(works, { pageSize: WORK_INDEX_PAGE_SIZE });
+}
+
+const { page } = Astro.props as Props;
+const title =
+  page.currentPage === 1
+    ? PAGE_META.worksIndex.title
+    : `${PAGE_META.worksIndex.title} ${page.currentPage}`;
+---
+
+<Layout title={title} description={PAGE_META.worksIndex.description}>
+  <div class="mx-auto flex max-w-5xl flex-col gap-10">
+    <header class="space-y-3">
+      <p class="text-sm font-semibold text-ink-500">作品まとめ</p>
+      <h1 class="text-3xl font-display text-ink-900 md:text-4xl">Works</h1>
+    </header>
+
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        page.data.map((work) => (
+          <article
+            class="group relative flex h-full cursor-pointer flex-col gap-4 rounded-2xl border border-sand-200 bg-sand-50 p-5 transition hover:border-sage-500/40 hover:shadow-soft focus-within:ring-2 focus-within:ring-sage-500/40"
+            data-card-link
+            data-href={`/works/${work.id}`}
+            role="link"
+            tabindex="0"
+            aria-label={`${work.data.title} の詳細へ移動`}
+          >
+            {work.data.thumbnail && (
+              <div class="overflow-hidden rounded-2xl border border-sand-200 bg-sand-50">
+                <img
+                  class="h-40 w-full object-cover transition duration-300 group-hover:scale-105"
+                  src={work.data.thumbnail}
+                  alt={`${work.data.title} のサムネイル`}
+                  loading="lazy"
+                />
+              </div>
+            )}
+            <div>
+              <h2 class="text-xl font-display text-ink-900">
+                {work.data.title}
+              </h2>
+              <p class="mt-2 text-sm leading-relaxed text-ink-600">
+                {work.data.description}
+              </p>
+            </div>
+            <div class="mt-2">
+              <TagList tags={work.data.tags ?? []} basePath="/works" />
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    {
+      page.lastPage > 1 && (
+        <nav
+          class="flex flex-wrap items-center justify-center gap-3 rounded-2xl border border-sand-200 bg-sand-50 px-4 py-3 text-sm font-semibold text-ink-700"
+          aria-label="Worksページのページネーション"
+        >
+          {page.url.prev ? (
+            <a
+              class="inline-flex items-center rounded-full border border-sand-200 px-3 py-1 transition hover:border-sage-500/40 hover:text-sage-700"
+              href={page.url.prev}
+              rel="prev"
+            >
+              ← 前へ
+            </a>
+          ) : (
+            <span
+              class="inline-flex items-center rounded-full border border-sand-200 px-3 py-1 text-ink-400"
+              aria-disabled="true"
+            >
+              ← 前へ
+            </span>
+          )}
+
+          <span class="px-2 text-xs text-ink-500">
+            {page.currentPage} / {page.lastPage}
+          </span>
+
+          {page.url.next ? (
+            <a
+              class="inline-flex items-center rounded-full border border-sand-200 px-3 py-1 transition hover:border-sage-500/40 hover:text-sage-700"
+              href={page.url.next}
+              rel="next"
+            >
+              次へ →
+            </a>
+          ) : (
+            <span
+              class="inline-flex items-center rounded-full border border-sand-200 px-3 py-1 text-ink-400"
+              aria-disabled="true"
+            >
+              次へ →
+            </span>
+          )}
+        </nav>
+      )
+    }
+  </div>
+</Layout>

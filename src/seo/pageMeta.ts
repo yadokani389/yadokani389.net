@@ -1,4 +1,4 @@
-import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import { SITE_DESCRIPTION } from "../consts";
 
 type PageMeta = {
   title: string;
@@ -29,24 +29,3 @@ export const PAGE_META = {
     description: "ページが見つかりません",
   },
 } as const satisfies Record<string, PageMeta>;
-
-export const STATIC_OG_PAGES: Record<string, PageMeta> = {
-  home: PAGE_META.home,
-  about: PAGE_META.about,
-  blog: PAGE_META.blogIndex,
-  works: PAGE_META.worksIndex,
-  default: {
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-  },
-};
-
-export const STATIC_OG_IMAGE_BY_PATH: Record<string, string> = {
-  "/": "/open-graph/home.png",
-  "/about": "/open-graph/about.png",
-  "/blog": "/open-graph/blog.png",
-  "/works": "/open-graph/works.png",
-  "/404": "/open-graph/default.png",
-};
-
-export const OG_DEFAULT_IMAGE_PATH = "/open-graph/default.png";

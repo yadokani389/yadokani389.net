@@ -8,9 +8,9 @@ import {
 } from "../../lib/og/constants";
 import { buildOgPages } from "../../lib/og/pages";
 import { getTitleFontSize } from "../../lib/og/title";
-import { OG_IMAGE_VERSION, STATIC_OG_PAGES } from "../../seo/pageMeta";
+import { OG_IMAGE_VERSION } from "../../seo/pageMeta";
 
-const pages = await buildOgPages(STATIC_OG_PAGES);
+const pages = await buildOgPages();
 const cardFramePath = await ensureCardFrameImage(OG_IMAGE_VERSION);
 
 export const { getStaticPaths, GET } = await OGImageRoute({

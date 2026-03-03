@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import type { GetStaticPathsOptions, Page } from "astro";
+import { Image } from "astro:assets";
 import TagList from "../../../../components/TagList.svelte";
 import Layout from "../../../../layouts/Layout.astro";
 import {
@@ -63,10 +64,12 @@ const { page, tagName, totalWorks } = Astro.props as Props;
           >
             {work.data.thumbnail && (
               <div class="overflow-hidden rounded-2xl border border-sand-200 bg-sand-50">
-                <img
+                <Image
                   class="h-40 w-full object-cover transition duration-300 group-hover:scale-105"
                   src={work.data.thumbnail}
                   alt={`${work.data.title} のサムネイル`}
+                  width={1200}
+                  height={630}
                   loading="lazy"
                 />
               </div>

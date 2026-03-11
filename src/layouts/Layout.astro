@@ -127,13 +127,14 @@ const defaultFontSizeLabel =
         const isValidMode = (mode) =>
           mode === "system" || daisyThemes.includes(mode);
 
-        let initialMode = defaultThemeMode;
-        try {
-          const storedMode = localStorage.getItem(themeStorageKey);
-          initialMode = isValidMode(storedMode) ? storedMode : defaultThemeMode;
-        } catch {
-          initialMode = defaultThemeMode;
-        }
+        const initialMode = (() => {
+          try {
+            const storedMode = localStorage.getItem(themeStorageKey);
+            return isValidMode(storedMode) ? storedMode : defaultThemeMode;
+          } catch {
+            return defaultThemeMode;
+          }
+        })();
 
         const prefersDark = window.matchMedia(
           "(prefers-color-scheme: dark)",
@@ -146,15 +147,16 @@ const defaultFontSizeLabel =
         document.documentElement.dataset.colorScheme = initialColorScheme;
 
         const isValidFontSizeMode = (mode) => fontSizeModes.includes(mode);
-        let initialFontSizeMode = defaultFontSizeMode;
-        try {
-          const storedFontSizeMode = localStorage.getItem(fontSizeStorageKey);
-          initialFontSizeMode = isValidFontSizeMode(storedFontSizeMode)
-            ? storedFontSizeMode
-            : defaultFontSizeMode;
-        } catch {
-          initialFontSizeMode = defaultFontSizeMode;
-        }
+        const initialFontSizeMode = (() => {
+          try {
+            const storedFontSizeMode = localStorage.getItem(fontSizeStorageKey);
+            return isValidFontSizeMode(storedFontSizeMode)
+              ? storedFontSizeMode
+              : defaultFontSizeMode;
+          } catch {
+            return defaultFontSizeMode;
+          }
+        })();
 
         document.documentElement.dataset.fontSize = initialFontSizeMode;
       })();

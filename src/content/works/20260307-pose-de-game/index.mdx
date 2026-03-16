@@ -1,0 +1,28 @@
+---
+title: "pose-de-game"
+description: "体の動きで遊ぶゲーム"
+date: 2026-03-07
+lastmod: 2026-03-07
+tags: ["rust", "bevy", "yolo", "ai"]
+external_url: "https://github.com/yadokani389/pose-de-game"
+---
+
+import demoVideo from "./pose-de-game-demo.mp4";
+
+HACK U 2025で作ったゲームです。
+
+<video class="mt-6 w-full rounded-2xl" controls playsinline preload="metadata">
+  <source src={demoVideo} type="video/mp4" />
+  お使いのブラウザは動画再生に対応していません。
+</video>
+
+カメラで体の動きを認識して、ポーズで操作をするゲームです。
+yoloのモデルをonnxに変換し`tract`, `ort` などのRustのライブラリで推論しています。
+
+実装されているゲームは以下の通りです。
+
+- エアーホッケー
+- エンドレスランナー
+- 旗上げゲーム
+- フルーツカット
+- ポーズシンクロ

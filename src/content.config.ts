@@ -11,7 +11,6 @@ const works = defineCollection({
       date: z.date(),
       lastmod: z.date().optional(),
       tags: z.array(z.string()).optional(),
-      external_url: z.string().optional(),
       thumbnail: image().optional(),
       layout: z.string().optional(),
       theme: z.string().optional(),

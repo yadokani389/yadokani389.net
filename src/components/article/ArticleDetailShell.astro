@@ -1,0 +1,89 @@
+---
+import TagList from "../TagList.svelte";
+import Budoux from "../Budoux.astro";
+import Layout from "../../layouts/Layout.astro";
+import { formatDate } from "../../utils/formatDate";
+
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  lastmod?: Date;
+  tags?: string[];
+  tagBasePath?: string;
+  backHref: string;
+  backLabel: string;
+}
+
+const {
+  title,
+  description,
+  date,
+  lastmod,
+  tags = [],
+  tagBasePath = null,
+  backHref,
+  backLabel,
+} = Astro.props as Props;
+
+const showUpdatedDate =
+  lastmod !== undefined && lastmod.getTime() !== date.getTime();
+---
+
+<Layout
+  title={title}
+  description={description}
+  ogType="article"
+  publishedTime={date.toISOString()}
+  modifiedTime={lastmod?.toISOString()}
+  tags={tags}
+>
+  <div class="mx-auto flex max-w-4xl flex-col gap-8">
+    <a
+      class="inline-flex items-center gap-2 text-sm font-semibold text-ink-600 hover:text-sage-600"
+      href={backHref}
+    >
+      {backLabel}
+    </a>
+    <header class="space-y-3">
+      <h1 data-budoux class="text-3xl font-display text-ink-900 md:text-4xl">
+        <Budoux text={title} />
+      </h1>
+      <p data-budoux class="text-lg text-ink-600">
+        <Budoux text={description} />
+      </p>
+      <div
+        class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-500"
+      >
+        <div>
+          公開日:
+          <time class="ml-1" datetime={date.toISOString()}
+            >{formatDate(date)}</time
+          >
+        </div>
+        {
+          showUpdatedDate && lastmod && (
+            <div>
+              最終更新:
+              <time class="ml-1" datetime={lastmod.toISOString()}>
+                {formatDate(lastmod)}
+              </time>
+            </div>
+          )
+        }
+      </div>
+    </header>
+
+    {
+      tags.length > 0 && (
+        <div class="mt-1">
+          <TagList tags={tags} basePath={tagBasePath} />
+        </div>
+      )
+    }
+
+    <div class="prose max-w-none">
+      <slot />
+    </div>
+  </div>
+</Layout>

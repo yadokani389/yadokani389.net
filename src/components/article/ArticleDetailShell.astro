@@ -13,6 +13,8 @@ interface Props {
   tagBasePath?: string;
   backHref: string;
   backLabel: string;
+  searchType: "blog" | "works";
+  searchLabel: string;
 }
 
 const {
@@ -24,10 +26,14 @@ const {
   tagBasePath = null,
   backHref,
   backLabel,
+  searchType,
+  searchLabel,
 } = Astro.props as Props;
 
 const showUpdatedDate =
   lastmod !== undefined && lastmod.getTime() !== date.getTime();
+const pagefindDateLabel = formatDate(date);
+const pagefindDateValue = date.getTime().toString();
 ---
 
 <Layout
@@ -38,8 +44,18 @@ const showUpdatedDate =
   modifiedTime={lastmod?.toISOString()}
   tags={tags}
 >
-  <div class="mx-auto flex max-w-4xl flex-col gap-8">
+  <div class="mx-auto flex max-w-4xl flex-col gap-8" data-pagefind-body>
+    <div class="sr-only" aria-hidden="true">
+      <span data-pagefind-meta={`kind:${searchLabel}`}></span>
+      <span data-pagefind-meta={`type:${searchType}`}></span>
+      <span data-pagefind-meta={`description:${description}`}></span>
+      <span data-pagefind-meta={`dateLabel:${pagefindDateLabel}`}></span>
+      <span
+        data-pagefind-filter={`type:${searchType}`}
+        data-pagefind-sort={`date:${pagefindDateValue}`}></span>
+    </div>
     <a
+      data-pagefind-ignore
       class="inline-flex items-center gap-2 text-sm font-semibold text-ink-600 hover:text-sage-600"
       href={backHref}
     >

@@ -24,6 +24,10 @@ export const PAGE_META = {
     title: "Works",
     description: "制作したゲームやツールの一覧",
   },
+  search: {
+    title: "Search",
+    description: "BlogとWorksを横断して記事本文まで検索",
+  },
   notFound: {
     title: "404",
     description: "ページが見つかりません",

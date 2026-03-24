@@ -20,6 +20,11 @@ export default defineConfig({
   integrations: [sitemap(), svelte(), mdx()],
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      rollupOptions: {
+        external: ["/pagefind/pagefind.js"],
+      },
+    },
   },
   markdown: {
     shikiConfig: {

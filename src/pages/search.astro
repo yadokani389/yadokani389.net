@@ -1,0 +1,86 @@
+---
+import SearchExperience from "../components/search/SearchExperience.svelte";
+import Layout from "../layouts/Layout.astro";
+import { getPublishedBlogPosts } from "../lib/blog/tags";
+import { getWorks } from "../lib/works/tags";
+import { PAGE_META } from "../seo/pageMeta";
+import { formatDate } from "../utils/formatDate";
+
+type SearchSeedEntry = {
+  title: string;
+  description: string;
+  href: string;
+  kind: "blog" | "works";
+  kindLabel: string;
+  dateValue: number;
+  dateLabel: string;
+};
+
+const blogPosts = await getPublishedBlogPosts();
+const works = await getWorks();
+
+const recentEntries = [
+  ...blogPosts.map(
+    (post): SearchSeedEntry => ({
+      title: post.data.title,
+      description: post.data.description,
+      href: `/blog/${post.id}`,
+      kind: "blog",
+      kindLabel: "Blog",
+      dateValue: post.data.date.getTime(),
+      dateLabel: formatDate(post.data.date),
+    }),
+  ),
+  ...works.map(
+    (work): SearchSeedEntry => ({
+      title: work.data.title,
+      description: work.data.description,
+      href: `/works/${work.id}`,
+      kind: "works",
+      kindLabel: "Works",
+      dateValue: work.data.date.getTime(),
+      dateLabel: formatDate(work.data.date),
+    }),
+  ),
+]
+  .sort((a, b) => b.dateValue - a.dateValue)
+  .slice(0, 6);
+
+const searchStats = {
+  blogCount: blogPosts.length,
+  worksCount: works.length,
+  totalCount: blogPosts.length + works.length,
+};
+---
+
+<Layout
+  title={PAGE_META.search.title}
+  description={PAGE_META.search.description}
+>
+  <div class="mx-auto flex max-w-4xl flex-col gap-6 md:gap-8">
+    <section class="border-b border-sand-200 pb-5 md:pb-6">
+      <div class="space-y-2">
+        <h1 class="text-3xl font-display text-ink-900 md:text-4xl">Search</h1>
+        <p class="max-w-2xl text-sm leading-relaxed text-ink-600 md:text-base">
+          BlogとWorksを横断して、タイトル・概要・タグ・本文まで検索できます。
+        </p>
+      </div>
+      <dl class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-600">
+        <div class="flex items-baseline gap-2">
+          <dt>Indexed</dt>
+          <dd class="font-semibold text-ink-900">{searchStats.totalCount}</dd>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <dt>Blog</dt>
+          <dd class="font-semibold text-ink-900">{searchStats.blogCount}</dd>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <dt>Works</dt>
+          <dd class="font-semibold text-ink-900">{searchStats.worksCount}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <SearchExperience client:load {recentEntries} {searchStats} />
+  </div>
+</Layout>

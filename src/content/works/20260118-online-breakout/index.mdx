@@ -2,13 +2,21 @@
 title: "online-breakout"
 description: "サーバー要らずのオンラインゲーム"
 date: 2026-01-18
-lastmod: 2026-02-15
+lastmod: 2026-04-30
 tags: ["rust", "bevy", "wasm"]
 ---
 
 https://yadokani389.github.io/online-breakout/
 
 Rustと[Bevy](https://bevy.org/)で作った、サーバー要らずのオンラインブロック崩しゲームです。
+
+ブラウザで遊べるようにWebAssembly向けにビルドしています。
+特徴は、専用のゲームサーバーやシグナリングサーバーを自分で立てなくても、プレイヤー同士で通信して対戦を始められることです。
+
+通信部分には `iroh` と `matchbox` を使い、ゲームの同期には `bevy_ggrs` を使っています。
+ゲーム本体はBevyで実装しつつ、ブラウザ上で動作するオンライン対戦として成立するように構成しました。
+
+GitHub Pagesのような静的ホスティングに置くだけで公開できるので、サーバー運用のコストをかけずにオンラインゲームを配布できます。
 
 詳しいことはZenn記事に書いています。
 

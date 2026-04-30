@@ -2,7 +2,7 @@
 title: "bevy_live_wallpaper"
 description: "ゲーム画面を壁紙に設定するBevy Plugin"
 date: 2026-02-23
-lastmod: 2026-02-23
+lastmod: 2026-04-30
 tags: ["rust", "bevy"]
 ---
 
@@ -10,6 +10,16 @@ https://github.com/yadokani389/bevy_live_wallpaper
 
 Bevyの画面をWindows, Linux(Wayland/X11)の背景にできるプラグインです。
 動的な壁紙を簡単に作ることができます。
+
+通常のBevyアプリに数行追加するだけで、描画結果をデスクトップの壁紙として表示できるようにすることを目指しました。
+アプリ側はできるだけBevyの書き方のままにして、OSごとの壁紙化処理をプラグイン側で吸収する設計にしています。
+
+対応対象はWindowsとLinuxです。
+LinuxはWaylandとX11で背景の扱いが違い、Windowsもまた別のAPIを使う必要があるため、各環境の差分を内部で分けています。
+利用者はどのOSかを強く意識せず、Bevyで動くライブ壁紙を作れるようにするのが目的です。
+
+このプラグインを使って、時計をライブ壁紙として表示する `flow-clock` や、メタボール風の図形が動く `co-myaku-wallpaper` も作りました。
+単体のアプリというより、Bevyの描画をデスクトップ上で活用するための部品として作っています。
 
 詳細は以下のZenn記事を参照してください。
 

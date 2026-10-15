@@ -21,6 +21,9 @@ The sandbox skips pnpm hooks because it has no `node_modules`. Run
 `pnpm format:check`, `pnpm check`, `pnpm lint`, `pnpm textlint`, and `pnpm build`
 separately for application validation. All hooks remain enabled in the development shell.
 
+Preview Workers use `public/_headers` to send `X-Robots-Tag: noindex` on
+`yadokani389-net-preview-*.yadokani389.workers.dev`. Production domains are not matched.
+
 The search feature uses Pagefind, and its index is generated during `pnpm run build`.
 
 Because of that, search is not available in `pnpm dev`.

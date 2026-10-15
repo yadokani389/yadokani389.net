@@ -20,6 +20,8 @@
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
       ];
 
       imports = [
@@ -38,8 +40,12 @@
             src = ./.;
             hooks = {
               actionlint.enable = true;
-              prettier.enable = true;
               treefmt.enable = true;
+              prettier = {
+                enable = true;
+                entry = "pnpm format";
+                pass_filenames = false;
+              };
               typos.enable = true;
               lint = {
                 enable = true;
@@ -56,28 +62,22 @@
             };
           };
 
+          checks.pre-commit = pkgs.lib.mkForce (
+            config.pre-commit.settings.run.overrideAttrs {
+              SKIP = "lint,prettier,textlint";
+            }
+          );
+
           treefmt = {
             projectRootFile = "flake.nix";
+            settings.global.excludes = [
+              ".direnv/**"
+              ".astro/**"
+              "dist/**"
+              "node_modules/**"
+              "pnpm-lock.yaml"
+            ];
             programs = {
-              prettier = {
-                enable = true;
-                includes = [
-                  "*.astro"
-                  "*.cjs"
-                  "*.cts"
-                  "*.d.cts"
-                  "*.d.mts"
-                  "*.d.ts"
-                  "*.js"
-                  "*.json"
-                  "*.jsonc"
-                  "*.jsx"
-                  "*.mjs"
-                  "*.mts"
-                  "*.ts"
-                  "*.tsx"
-                ];
-              };
               nixfmt.enable = true;
             };
           };
@@ -85,7 +85,7 @@
           packages.ci = pkgs.buildEnv {
             name = "ci-dependencies";
             paths = with pkgs; [
-              nodejs-slim
+              nodejs_24
               pnpm
               wrangler
             ];
@@ -96,11 +96,7 @@
               inputsFrom = [
                 config.pre-commit.devShell
               ];
-              packages = with pkgs; [
-                nodejs-slim
-                pnpm
-                wrangler
-              ];
+              packages = [ config.packages.ci ];
             };
           };
         };

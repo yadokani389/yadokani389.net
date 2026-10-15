@@ -15,9 +15,7 @@ const works = (await getCollection("works"))
 
 <Layout title={PAGE_META.home.title} description={PAGE_META.home.description}>
   <div class="mx-auto flex max-w-5xl flex-col gap-12 pb-6">
-    <section
-      class="relative overflow-hidden rounded-2xl border border-sand-100 bg-sand-50 p-8 shadow-lift before:absolute before:-right-16 before:-top-16 before:h-48 before:w-48 before:rounded-full before:bg-clay-300/40 before:blur-3xl before:content-[''] md:p-10"
-    >
+    <section class="relative overflow-hidden rounded-2xl border border-sand-100 bg-sand-50 p-8 shadow-lift before:absolute before:-right-16 before:-top-16 before:h-48 before:w-48 before:rounded-full before:bg-clay-300/40 before:blur-3xl before:content-[''] md:p-10">
       <p class="text-xs font-semibold tracking-[0.12em] text-ink-500">
         ようこそ
       </p>
@@ -70,26 +68,24 @@ const works = (await getCollection("works"))
         </a>
       </div>
       <div class="grid gap-6 md:grid-cols-2">
-        {
-          posts.map((post) => (
-            <a
-              class="group flex h-full flex-col justify-between rounded-2xl border border-sand-200 bg-sand-50 p-6 transition hover:border-sage-500/40 hover:shadow-soft"
-              href={`/blog/${post.id}`}
-            >
-              <div>
-                <h3 class="text-xl font-display text-ink-900">
-                  {post.data.title}
-                </h3>
-                <p class="mt-2 text-sm leading-relaxed text-ink-600">
-                  {post.data.description}
-                </p>
-              </div>
-              <span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sage-600">
-                記事を読む
-              </span>
-            </a>
-          ))
-        }
+        {posts.map((post) => (
+          <a
+            class="group flex h-full flex-col justify-between rounded-2xl border border-sand-200 bg-sand-50 p-6 transition hover:border-sage-500/40 hover:shadow-soft"
+            href={`/blog/${post.id}`}
+          >
+            <div>
+              <h3 class="text-xl font-display text-ink-900">
+                {post.data.title}
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-600">
+                {post.data.description}
+              </p>
+            </div>
+            <span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sage-600">
+              記事を読む
+            </span>
+          </a>
+        ))}
       </div>
     </section>
 
@@ -112,26 +108,24 @@ const works = (await getCollection("works"))
         </a>
       </div>
       <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {
-          works.map((work) => (
-            <a
-              class="group flex h-full flex-col justify-between rounded-2xl border border-sand-200 bg-sand-50 p-6 transition hover:border-sage-500/40 hover:shadow-soft"
-              href={`/works/${work.id}`}
-            >
-              <div>
-                <h3 class="text-xl font-display text-ink-900">
-                  {work.data.title}
-                </h3>
-                <p class="mt-2 text-sm leading-relaxed text-ink-600">
-                  {work.data.description}
-                </p>
-              </div>
-              <span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sage-600">
-                詳細を見る
-              </span>
-            </a>
-          ))
-        }
+        {works.map((work) => (
+          <a
+            class="group flex h-full flex-col justify-between rounded-2xl border border-sand-200 bg-sand-50 p-6 transition hover:border-sage-500/40 hover:shadow-soft"
+            href={`/works/${work.id}`}
+          >
+            <div>
+              <h3 class="text-xl font-display text-ink-900">
+                {work.data.title}
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-600">
+                {work.data.description}
+              </p>
+            </div>
+            <span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sage-600">
+              詳細を見る
+            </span>
+          </a>
+        ))}
       </div>
     </section>
   </div>

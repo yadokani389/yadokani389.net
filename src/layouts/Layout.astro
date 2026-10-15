@@ -186,26 +186,22 @@ const defaultFontSizeLabel =
     <meta name="twitter:description" content={pageDescription} />
     {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
     {ogImageUrl && <meta name="twitter:image:alt" content={pageTitle} />}
-    {
-      ogType === "article" && publishedTime && (
-        <meta property="article:published_time" content={publishedTime} />
-      )
-    }
-    {
-      ogType === "article" && modifiedTime && (
-        <meta property="article:modified_time" content={modifiedTime} />
-      )
-    }
-    {
-      ogType === "article" &&
-        tags.map((tag) => <meta property="article:tag" content={tag} />)
-    }
+    {ogType === "article" && publishedTime && (
+      <meta property="article:published_time" content={publishedTime} />
+    )}
+    {ogType === "article" && modifiedTime && (
+      <meta property="article:modified_time" content={modifiedTime} />
+    )}
+    {ogType === "article" &&
+      tags.map((tag) => <meta property="article:tag" content={tag} />)}
   </head>
   <body>
     <a
       class="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:z-50 focus:rounded-full focus:bg-sand-50 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink-900 focus:shadow-soft focus:ring-2 focus:ring-sage-500/40"
-      href="#main">本文へスキップ</a
+      href="#main"
     >
+      本文へスキップ
+    </a>
     <SiteHeader
       siteTitle={SITE_TITLE}
       normalizedPath={normalizedPath}

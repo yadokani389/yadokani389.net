@@ -1,4 +1,5 @@
 import mdx from "@astrojs/mdx";
+import { unified } from "@astrojs/markdown-remark";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwindcss from "@tailwindcss/vite";
@@ -34,21 +35,23 @@ export default defineConfig({
       },
       transformers: [shikiCodeFilenameTransformer()],
     },
-    remarkPlugins: [
-      remarkCodeFilename,
-      remarkMath,
-      remarkRuby,
-      remarkGemoji,
-      [
-        remarkLinkCard,
-        {
-          cache: true,
-          noFavicon: false,
-          noThumbnail: true,
-          shortenUrl: true,
-        },
+    processor: unified({
+      remarkPlugins: [
+        remarkCodeFilename,
+        remarkMath,
+        remarkRuby,
+        remarkGemoji,
+        [
+          remarkLinkCard,
+          {
+            cache: true,
+            noFavicon: false,
+            noThumbnail: true,
+            shortenUrl: true,
+          },
+        ],
       ],
-    ],
-    rehypePlugins: [rehypeBudoux, rehypeTypst],
+      rehypePlugins: [rehypeBudoux, rehypeTypst],
+    }),
   },
 });

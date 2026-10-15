@@ -52,7 +52,8 @@ const pagefindDateValue = date.getTime().toString();
       <span data-pagefind-meta={`dateLabel:${pagefindDateLabel}`}></span>
       <span
         data-pagefind-filter={`type:${searchType}`}
-        data-pagefind-sort={`date:${pagefindDateValue}`}></span>
+        data-pagefind-sort={`date:${pagefindDateValue}`}
+      ></span>
     </div>
     <a
       data-pagefind-ignore
@@ -68,35 +69,29 @@ const pagefindDateValue = date.getTime().toString();
       <p data-budoux class="text-lg text-ink-600">
         <Budoux text={description} />
       </p>
-      <div
-        class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-500"
-      >
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-500">
         <div>
           公開日:
-          <time class="ml-1" datetime={date.toISOString()}
-            >{formatDate(date)}</time
-          >
+          <time class="ml-1" datetime={date.toISOString()}>
+            {formatDate(date)}
+          </time>
         </div>
-        {
-          showUpdatedDate && lastmod && (
-            <div>
-              最終更新:
-              <time class="ml-1" datetime={lastmod.toISOString()}>
-                {formatDate(lastmod)}
-              </time>
-            </div>
-          )
-        }
+        {showUpdatedDate && lastmod && (
+          <div>
+            最終更新:
+            <time class="ml-1" datetime={lastmod.toISOString()}>
+              {formatDate(lastmod)}
+            </time>
+          </div>
+        )}
       </div>
     </header>
 
-    {
-      tags.length > 0 && (
-        <div class="mt-1">
-          <TagList tags={tags} basePath={tagBasePath} />
-        </div>
-      )
-    }
+    {tags.length > 0 && (
+      <div class="mt-1">
+        <TagList tags={tags} basePath={tagBasePath} />
+      </div>
+    )}
 
     <div class="prose max-w-none">
       <slot />

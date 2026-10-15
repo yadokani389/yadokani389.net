@@ -14,7 +14,6 @@ const pages = await buildOgPages();
 const cardFramePath = await ensureCardFrameImage(OG_IMAGE_VERSION);
 
 export const { getStaticPaths, GET } = await OGImageRoute({
-  param: "route",
   pages,
   getImageOptions: (_path, page) => {
     const titleSize = getTitleFontSize(page.title);

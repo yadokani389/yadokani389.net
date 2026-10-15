@@ -20,28 +20,24 @@ const blogPosts = await getPublishedBlogPosts();
 const works = await getWorks();
 
 const recentEntries = [
-  ...blogPosts.map(
-    (post): SearchSeedEntry => ({
-      title: post.data.title,
-      description: post.data.description,
-      href: `/blog/${post.id}`,
-      kind: "blog",
-      kindLabel: "Blog",
-      dateValue: post.data.date.getTime(),
-      dateLabel: formatDate(post.data.date),
-    }),
-  ),
-  ...works.map(
-    (work): SearchSeedEntry => ({
-      title: work.data.title,
-      description: work.data.description,
-      href: `/works/${work.id}`,
-      kind: "works",
-      kindLabel: "Works",
-      dateValue: work.data.date.getTime(),
-      dateLabel: formatDate(work.data.date),
-    }),
-  ),
+  ...blogPosts.map((post): SearchSeedEntry => ({
+    title: post.data.title,
+    description: post.data.description,
+    href: `/blog/${post.id}`,
+    kind: "blog",
+    kindLabel: "Blog",
+    dateValue: post.data.date.getTime(),
+    dateLabel: formatDate(post.data.date),
+  })),
+  ...works.map((work): SearchSeedEntry => ({
+    title: work.data.title,
+    description: work.data.description,
+    href: `/works/${work.id}`,
+    kind: "works",
+    kindLabel: "Works",
+    dateValue: work.data.date.getTime(),
+    dateLabel: formatDate(work.data.date),
+  })),
 ]
   .sort((a, b) => b.dateValue - a.dateValue)
   .slice(0, 6);

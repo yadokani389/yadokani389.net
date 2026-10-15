@@ -7,24 +7,25 @@ const { siteTitle } = Astro.props as Props;
 ---
 
 <footer class="border-t border-sand-200 bg-sand-50/70">
-  <div
-    class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-10 text-sm text-ink-600"
-  >
-    <div
-      class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-500"
-    >
+  <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-10 text-sm text-ink-600">
+    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-500">
       <span>© 2026 {siteTitle}</span>
       <span aria-hidden="true">·</span>
       <span>
         License: Blog Content
         <a
           class="font-semibold text-ink-600 hover:text-sage-600"
-          href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a
-        > · Code
+          href="https://creativecommons.org/licenses/by-sa/4.0/"
+        >
+          CC BY-SA 4.0
+        </a>{" "}
+        · Code
         <a
           class="font-semibold text-ink-600 hover:text-sage-600"
-          href="https://opensource.org/license/MIT">MIT</a
+          href="https://opensource.org/license/MIT"
         >
+          MIT
+        </a>
       </span>
     </div>
     <div class="flex items-center gap-4">
@@ -42,8 +43,8 @@ const { siteTitle } = Astro.props as Props;
           <path
             fill="currentColor"
             d="M160 96C124.7 96 96 124.7 96 160L96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 160C544 124.7 515.3 96 480 96L160 96zM192 200C192 186.7 202.7 176 216 176C353 176 464 287 464 424C464 437.3 453.3 448 440 448C426.7 448 416 437.3 416 424C416 313.5 326.5 224 216 224C202.7 224 192 213.3 192 200zM192 296C192 282.7 202.7 272 216 272C299.9 272 368 340.1 368 424C368 437.3 357.3 448 344 448C330.7 448 320 437.3 320 424C320 366.6 273.4 320 216 320C202.7 320 192 309.3 192 296zM192 416C192 398.3 206.3 384 224 384C241.7 384 256 398.3 256 416C256 433.7 241.7 448 224 448C206.3 448 192 433.7 192 416z"
-          ></path></svg
-        >
+          ></path>
+        </svg>
       </a>
       <a
         class="inline-flex items-center gap-2 text-ink-600 transition hover:text-sage-600"
@@ -82,12 +83,8 @@ const { siteTitle } = Astro.props as Props;
       >
         <svg class="h-5 w-5" viewBox="0 0 88.3 88.3" aria-hidden="true">
           <g fill="currentColor">
-            <path
-              d="M3.9,83.3h17c0.9,0,1.7-0.5,2.2-1.2L69.9,5.2c0.6-1-0.1-2.2-1.3-2.2H52.5c-0.8,0-1.5,0.4-1.9,1.1L3.1,81.9C2.8,82.5,3.2,83.3,3.9,83.3z"
-            ></path>
-            <path
-              d="M62.5,82.1l22.1-35.5c0.7-1.1-0.1-2.5-1.4-2.5h-16c-0.6,0-1.2,0.3-1.5,0.8L43,81.2c-0.6,0.9,0.1,2.1,1.2,2.1h16.3C61.3,83.3,62.1,82.9,62.5,82.1z"
-            ></path>
+            <path d="M3.9,83.3h17c0.9,0,1.7-0.5,2.2-1.2L69.9,5.2c0.6-1-0.1-2.2-1.3-2.2H52.5c-0.8,0-1.5,0.4-1.9,1.1L3.1,81.9C2.8,82.5,3.2,83.3,3.9,83.3z"></path>
+            <path d="M62.5,82.1l22.1-35.5c0.7-1.1-0.1-2.5-1.4-2.5h-16c-0.6,0-1.2,0.3-1.5,0.8L43,81.2c-0.6,0.9,0.1,2.1,1.2,2.1h16.3C61.3,83.3,62.1,82.9,62.5,82.1z"></path>
           </g>
         </svg>
       </a>

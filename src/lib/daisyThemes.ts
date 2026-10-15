@@ -2,7 +2,6 @@ type DaisyThemeToken = {
   "color-scheme"?: string;
 };
 
-// @ts-expect-error -- daisyUI internal export has no type declaration.
 import themeOrder from "daisyui/functions/themeOrder.js";
 import themesObject from "daisyui/theme/object.js";
 

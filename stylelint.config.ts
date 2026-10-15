@@ -23,6 +23,7 @@ const config = {
         ],
       },
     ],
+    "at-rule-prelude-no-invalid": [true, { ignoreAtRules: ["apply"] }],
     "no-descending-specificity": null,
   },
 };

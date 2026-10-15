@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>yadokani389 · OG artwork</title>
+    <style>
+      @import url("../../node_modules/@fontsource/m-plus-rounded-1c/japanese-500.css");
+      @import url("../../node_modules/@fontsource/m-plus-rounded-1c/latin-500.css");
+
+      @font-face {
+        font-family: Fredoka;
+        src: url("../../node_modules/@fontsource/fredoka/files/fredoka-latin-500-normal.woff2")
+          format("woff2");
+        font-weight: 500;
+        font-display: block;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: #fffdf5;
+      }
+
+      body {
+        isolation: isolate;
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        margin: 0;
+        overflow: hidden;
+        background: #fffdf5;
+        color: #1e4842;
+        font-family: "M PLUS Rounded 1c", sans-serif;
+      }
+
+      body::before,
+      body::after {
+        content: "";
+        position: absolute;
+        width: 480px;
+        height: 480px;
+        border-radius: 50%;
+        z-index: -1;
+      }
+
+      body::before {
+        right: -245px;
+        top: -245px;
+        background: #e2d8ee;
+      }
+
+      body::after {
+        left: -290px;
+        bottom: -290px;
+        background: #d6e5d0;
+      }
+
+      .effects {
+        position: absolute;
+        inset: 0;
+        width: 1200px;
+        height: 630px;
+        z-index: -1;
+      }
+
+      main {
+        position: absolute;
+        top: 168px;
+        left: 60px;
+        right: 60px;
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0;
+        font:
+          500 144px/1.15 Fredoka,
+          sans-serif;
+        letter-spacing: -4px;
+      }
+
+      .description {
+        margin: 34px 0 0;
+        font-size: 36px;
+        line-height: 1.5;
+        letter-spacing: 0.08em;
+      }
+
+      .domain {
+        position: absolute;
+        left: 78px;
+        bottom: 56px;
+        margin: 0;
+        font:
+          500 25px/1.4 Fredoka,
+          sans-serif;
+        color: #647a70;
+      }
+
+      .mascot {
+        position: absolute;
+        right: 14px;
+        bottom: -40px;
+        width: 278px;
+        height: 278px;
+        object-fit: contain;
+        mix-blend-mode: multiply;
+      }
+
+      [data-view="article"] main {
+        display: none;
+      }
+
+      [data-view="article"] .domain {
+        font-size: 40px;
+        color: #1e4842;
+      }
+    </style>
+  </head>
+  <body>
+    <svg
+      class="effects"
+      viewBox="0 0 1200 630"
+      aria-hidden="true"
+      shape-rendering="crispEdges"
+    >
+      <path
+        d="M18 0H24V12H30V18H42V24H30V30H24V42H18V30H12V24H0V18H12V12H18Z"
+        transform="translate(266 46)"
+        fill="#b09bc9"
+      />
+      <path
+        d="M12 0H18V6H24V12H30V18H24V24H18V30H12V24H6V18H0V12H6V6H12Z"
+        transform="translate(50 324)"
+        fill="#9fbea6"
+      />
+      <g fill="#d8c38e">
+        <rect x="808" y="482" width="10" height="10" />
+        <rect x="828" y="482" width="10" height="10" />
+        <rect x="818" y="492" width="10" height="10" />
+        <rect x="808" y="502" width="10" height="10" />
+      </g>
+    </svg>
+    <main>
+      <h1>yadokani389</h1>
+      <p class="description">制作物と日々の記録</p>
+    </main>
+    <p class="domain">yadokani389.net</p>
+    <img
+      class="mascot"
+      src="../../public/favicon.png"
+      alt=""
+      width="278"
+      height="278"
+    />
+  </body>
+</html>

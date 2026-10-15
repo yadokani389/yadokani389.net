@@ -82,13 +82,18 @@
             };
           };
 
-          packages.ci = pkgs.buildEnv {
-            name = "ci-dependencies";
-            paths = with pkgs; [
-              nodejs_24
-              pnpm
-              wrangler
-            ];
+          packages = {
+            ci = pkgs.buildEnv {
+              name = "ci-dependencies";
+              paths = with pkgs; [
+                nodejs_24
+                pnpm
+                wrangler
+              ];
+            };
+          }
+          // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+            inherit (pkgs) chromium;
           };
 
           devShells = {

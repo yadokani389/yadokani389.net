@@ -34,6 +34,22 @@ pnpm run build
 pnpm run preview
 ```
 
+## OG image
+
+The default social image is `public/images/site-og-v1.png`; article images share
+`assets/og/article-base-v11.png`. Edit `assets/og/index.html` and regenerate both
+with Chromium. On Linux:
+
+```sh
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE="$(nix build .#chromium --print-out-paths --no-link)/bin/chromium"
+pnpm generate:og
+```
+
+The renderer uses local fonts and the existing site icon. When changing the image,
+version its filename and consuming references together so social services can
+fetch the new image. Article design changes also require bumping `OG_IMAGE_VERSION`
+in `src/seo/pageMeta.ts`.
+
 ## License
 
 This project uses dual licensing:

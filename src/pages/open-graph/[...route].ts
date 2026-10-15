@@ -1,5 +1,4 @@
 import { OGImageRoute } from "astro-og-canvas";
-import { ensureCardFrameImage } from "../../lib/og/cardFrame";
 import {
   bgGradient,
   descriptionColor,
@@ -8,10 +7,8 @@ import {
 } from "../../lib/og/constants";
 import { buildOgPages } from "../../lib/og/pages";
 import { getTitleFontSize } from "../../lib/og/title";
-import { OG_IMAGE_VERSION } from "../../seo/pageMeta";
 
 const pages = await buildOgPages();
-const cardFramePath = await ensureCardFrameImage(OG_IMAGE_VERSION);
 
 export const { getStaticPaths, GET } = await OGImageRoute({
   pages,
@@ -29,7 +26,7 @@ export const { getStaticPaths, GET } = await OGImageRoute({
           weight: "Bold",
           lineHeight: 1.12,
           families: [
-            "Fredoka",
+            "Fredoka Light",
             "Rounded Mplus 1c Bold",
             "Rounded Mplus 1c Medium",
           ],
@@ -42,13 +39,13 @@ export const { getStaticPaths, GET } = await OGImageRoute({
           families: [
             "Rounded Mplus 1c Medium",
             "Rounded Mplus 1c Bold",
-            "Fredoka",
+            "Fredoka Light",
           ],
         },
       },
       bgGradient,
       bgImage: {
-        path: cardFramePath,
+        path: "assets/og/article-base-v11.png",
         fit: "cover",
       },
       padding: 90,

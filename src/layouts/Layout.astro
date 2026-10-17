@@ -14,6 +14,7 @@ import "@fontsource/m-plus-rounded-1c/japanese-500.css";
 import "@fontsource/m-plus-rounded-1c/japanese-700.css";
 import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "../consts";
 import { OG_IMAGE_VERSION } from "../seo/pageMeta";
+import { isTagArchive } from "../seo/indexing";
 import { daisyThemes, darkThemeModes } from "../lib/daisyThemes";
 import SiteFooter from "../components/layout/SiteFooter.astro";
 import SiteHeader from "../components/layout/SiteHeader.astro";
@@ -167,6 +168,7 @@ const defaultFontSizeLabel =
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
+    {isTagArchive(pathname) && <meta name="robots" content="noindex" />}
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:type" content={ogType} />

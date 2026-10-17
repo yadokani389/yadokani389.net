@@ -14,6 +14,7 @@ for (const path of ["/", "/blog", "/works", "/about", "/search"]) {
     expect(response?.status()).toBe(200);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page).toHaveTitle(/yadokani389/);
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
     await page.evaluate(() => globalThis.document.fonts.ready);
     expect(
       await page.evaluate(
@@ -68,9 +69,14 @@ for (const kind of ["blog", "works"]) {
     await page.locator(`a[href^="/${kind}/tags/"]`).first().click();
     await expect(page).toHaveURL(new RegExp(`/${kind}/tags/`));
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(/^#/);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      "noindex",
+    );
     await page.locator(".card-title-link").first().focus();
     await page.keyboard.press("Enter");
     await expect(page.locator("[data-pagefind-body]")).toBeVisible();
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
     await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
       "content",
       "article",
@@ -84,8 +90,26 @@ for (const kind of ["blog", "works"]) {
     );
     expect(response.ok()).toBe(true);
     expect(response.headers()["content-type"]).toContain("image/png");
+    const sitemap = await page.request.get("/sitemap-0.xml");
+    expect(sitemap.ok()).toBe(true);
+    const xml = await sitemap.text();
+    expect(xml).not.toContain(`/${kind}/tags/`);
+    expect(xml).toContain(new globalThis.URL(page.url()).pathname);
   });
 }
+
+test("tag archive URLs with a trailing slash render with noindex", async ({
+  page,
+}) => {
+  const response = await page.goto("/works/tags/yolo/");
+  expect(response?.status()).toBe(200);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("#yolo");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+    "content",
+    "noindex",
+  );
+  await expect(page.locator(".card-title-link").first()).toBeVisible();
+});
 
 test("theme and font size survive navigation and reload", async ({ page }) => {
   await page.goto("/");

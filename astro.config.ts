@@ -6,6 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import process from "node:process";
 import { SITE_URL } from "./src/consts";
+import { isTagArchive } from "./src/seo/indexing";
 import rehypeBudoux from "./src/lib/rehype-budoux";
 import remarkCodeFilename from "./src/lib/remark-code-filename";
 import shikiCodeFilenameTransformer from "./src/lib/shiki-code-filename-transformer";
@@ -18,7 +19,13 @@ import remarkMath from "remark-math";
 // https://astro.build/config
 export default defineConfig({
   site: process.env.SITE_URL || SITE_URL,
-  integrations: [sitemap(), svelte(), mdx()],
+  integrations: [
+    sitemap({
+      filter: (page) => !isTagArchive(new globalThis.URL(page).pathname),
+    }),
+    svelte(),
+    mdx(),
+  ],
   vite: {
     plugins: [tailwindcss()],
     build: {

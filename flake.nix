@@ -73,6 +73,7 @@
             settings.global.excludes = [
               ".direnv/**"
               ".astro/**"
+              ".cloudflare/**"
               "dist/**"
               "node_modules/**"
               "pnpm-lock.yaml"
@@ -88,7 +89,6 @@
               paths = with pkgs; [
                 nodejs_24
                 pnpm
-                wrangler
               ];
             };
           }

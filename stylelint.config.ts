@@ -1,5 +1,5 @@
 const config = {
-  ignoreFiles: ["dist/**"],
+  ignoreFiles: ["dist/**", ".cloudflare/**"],
   extends: ["stylelint-config-recommended", "stylelint-config-html"],
   rules: {
     "at-rule-no-unknown": [

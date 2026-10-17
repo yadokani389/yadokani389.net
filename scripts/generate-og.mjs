@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import process from "node:process";
 import { fileURLToPath, URL } from "node:url";
-import { chromium } from "playwright";
+import { chromium } from "@playwright/test";
 import sharp from "sharp";
 
 const images = [

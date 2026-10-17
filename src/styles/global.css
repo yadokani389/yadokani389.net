@@ -5,6 +5,15 @@
   /* Workaround for daisyUI#3882: nested @property warns during CSS optimization. */
   exclude: properties;
 }
+@plugin "daisyui/theme" {
+  name: "dim";
+  --color-base-100: #242932;
+  --color-base-200: #2c323b;
+  --color-base-300: #454b54;
+  --color-base-content: #e4e5df;
+  --color-primary: #b1cca4;
+  --color-primary-content: #202b1d;
+}
 @source "../**/*.{astro,html,js,jsx,ts,tsx,svelte,md,mdx}";
 
 @theme {
@@ -71,15 +80,6 @@
     var(--color-secondary) 64%,
     var(--color-base-content)
   );
-
-  --shadow-soft: 0 6px 16px
-    color-mix(in oklab, var(--color-base-content) 12%, transparent);
-  --shadow-lift: 0 10px 22px
-    color-mix(in oklab, var(--color-base-content) 16%, transparent);
-  --shadow-glow: 0 10px 18px
-    color-mix(in oklab, var(--color-primary) 30%, transparent);
-
-  --radius-4xl: 2rem;
 }
 
 @layer base {
@@ -109,7 +109,7 @@
   }
 
   body {
-    @apply min-h-screen bg-sand-100 font-sans text-ink-900 antialiased flex flex-col;
+    @apply min-h-screen bg-sand-50 font-sans text-ink-900 antialiased flex flex-col;
     letter-spacing: 0.01em;
     overflow-x: clip;
   }
@@ -130,7 +130,8 @@
   h2,
   h3,
   h4 {
-    @apply font-display text-ink-900;
+    @apply font-display font-medium text-ink-900;
+    overflow-wrap: anywhere;
   }
 
   ::selection {
@@ -236,7 +237,7 @@
   }
 
   .prose .remark-link-card-plus__card {
-    @apply flex w-full max-w-full flex-col gap-1.5 overflow-hidden rounded-xl border border-sand-200 bg-sand-50 px-3.5 py-2.5 !no-underline transition hover:border-sage-500/40 hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500/40;
+    @apply flex w-full max-w-full flex-col gap-1.5 overflow-hidden rounded-md border border-sand-200 bg-sand-50 px-3.5 py-2.5 !no-underline transition hover:border-sage-500/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500/40;
   }
 
   .prose .remark-link-card-plus__main {
@@ -289,11 +290,31 @@
 
 @layer components {
   .content-card {
-    @apply rounded-2xl border border-sand-200 bg-sand-50 transition-colors;
+    @apply border-b border-sand-200 py-6 transition-colors;
   }
 
   .content-card:hover {
-    @apply border-sage-500/40 shadow-soft;
+    @apply border-sage-500;
+  }
+
+  .content-card:hover h2 {
+    @apply text-sage-600;
+  }
+
+  .text-link {
+    @apply inline-flex min-h-11 w-fit items-center gap-5 border-b border-sage-500 pb-1 text-sm font-medium text-ink-900;
+  }
+
+  .text-link:hover {
+    @apply text-sage-600;
+  }
+
+  .text-link span {
+    transition: transform 180ms ease;
+  }
+
+  .text-link:hover span {
+    transform: translateX(4px);
   }
 
   .content-card:focus-within {
@@ -312,7 +333,7 @@
   }
 
   .pagination-link {
-    @apply inline-flex min-h-11 items-center rounded-full border border-sand-200 px-3 py-1;
+    @apply inline-flex min-h-11 items-center rounded-md border border-sand-200 px-3 py-1;
   }
 
   a.pagination-link:hover {

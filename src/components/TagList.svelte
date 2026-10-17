@@ -17,14 +17,14 @@
 			<li>
 				{#if href}
 					<a
-						class="relative z-10 inline-flex min-h-8 items-center rounded-full border border-sand-200 bg-sand-50 px-3 py-1 text-xs font-semibold text-ink-600 transition hover:border-sage-500/40 hover:text-sage-700"
+						class="relative z-10 inline-flex min-h-8 items-center rounded-sm bg-sand-100 px-2 py-1 text-xs font-semibold text-ink-600 transition hover:text-sage-700"
 						{href}
 					>
 						{tag}
 					</a>
 				{:else}
 					<span
-						class="inline-flex items-center rounded-full border border-sand-200 bg-sand-50 px-3 py-1 text-xs font-semibold text-ink-600"
+						class="inline-flex items-center rounded-sm bg-sand-100 px-2 py-1 text-xs font-semibold text-ink-600"
 					>
 						{tag}
 					</span>

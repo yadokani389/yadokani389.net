@@ -14,14 +14,9 @@ const thumbnail =
   entry.collection === "works" ? entry.data.thumbnail : undefined;
 ---
 
-<article
-  class:list={[
-    "content-card group relative flex h-full flex-col gap-4",
-    entry.collection === "works" ? "p-5" : "p-6",
-  ]}
->
+<article class="content-card group relative flex h-full flex-col gap-4">
   {thumbnail && (
-    <div class="overflow-hidden rounded-2xl border border-sand-200 bg-sand-50">
+    <div class="overflow-hidden rounded-md border border-sand-200 bg-sand-50">
       <Image
         class="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105"
         src={thumbnail}

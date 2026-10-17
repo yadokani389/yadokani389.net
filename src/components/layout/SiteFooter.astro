@@ -6,20 +6,20 @@ interface Props {
 const { siteTitle } = Astro.props as Props;
 ---
 
-<footer class="border-t border-sand-200 bg-sand-50/70">
-  <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-10 text-sm text-ink-600">
+<footer class="border-t border-sand-200 bg-sand-50">
+  <div class="mx-auto flex max-w-[1072px] flex-wrap items-center justify-between gap-4 px-6 py-10 text-sm text-ink-600">
     <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-500">
       <span>© 2026 {siteTitle}</span>
       <span aria-hidden="true">·</span>
       <span>
-        License: Blog Content
+        License: Blog Content{" "}
         <a
           class="font-semibold text-ink-600 hover:text-sage-600"
           href="https://creativecommons.org/licenses/by-sa/4.0/"
         >
           CC BY-SA 4.0
         </a>{" "}
-        · Code
+        · Code{" "}
         <a
           class="font-semibold text-ink-600 hover:text-sage-600"
           href="https://opensource.org/license/MIT"

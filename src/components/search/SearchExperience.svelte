@@ -406,12 +406,11 @@
 		align-items: center;
 		gap: 0.75rem;
 		border: 1px solid var(--color-sand-200);
-		border-radius: 0.9rem;
+		border-radius: 0.375rem;
 		background: var(--color-sand-50);
 		padding: 0 0.8rem;
 		transition:
 			border-color 160ms ease,
-			box-shadow 160ms ease,
 			background-color 160ms ease;
 	}
 
@@ -423,8 +422,6 @@
 			var(--color-sage-500) 45%,
 			var(--color-sand-200)
 		);
-		box-shadow: 0 0 0 3px
-			color-mix(in oklab, var(--color-sage-500) 10%, transparent);
 		background: var(--color-sand-50);
 	}
 
@@ -498,7 +495,7 @@
 		align-items: center;
 		gap: 0.45rem;
 		border: 1px solid var(--color-sand-200);
-		border-radius: 999px;
+		border-radius: 0.25rem;
 		background: transparent;
 		padding: 0.42rem 0.75rem;
 		font: inherit;
@@ -588,7 +585,7 @@
 	.result-link {
 		display: block;
 		margin-inline: -0.4rem;
-		border-radius: 0.9rem;
+		border-radius: 0.375rem;
 		padding: 0.9rem 0.4rem;
 		transition: background-color 160ms ease;
 	}
@@ -611,7 +608,7 @@
 		display: inline-flex;
 		align-items: center;
 		border: 1px solid var(--color-sand-200);
-		border-radius: 999px;
+		border-radius: 0.25rem;
 		padding: 0.12rem 0.45rem;
 		font-size: 0.72rem;
 		font-weight: 700;

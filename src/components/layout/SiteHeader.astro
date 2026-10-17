@@ -46,7 +46,7 @@ const searchHref = "/search";
 ---
 
 <header class="sticky top-0 z-20 border-b border-sand-200 bg-sand-50">
-  <div class="mx-auto flex max-w-5xl items-center justify-between gap-2 px-3 py-3 sm:gap-3 sm:px-6">
+  <div class="mx-auto flex max-w-[1072px] items-center justify-between gap-2 px-3 py-3 sm:gap-3 sm:px-6">
     <a
       class="min-w-0 truncate text-lg font-display font-semibold text-ink-900"
       href="/"
@@ -75,10 +75,10 @@ const searchHref = "/search";
       <a
         href={searchHref}
         class:list={{
-          "inline-flex min-h-11 min-w-11 justify-center items-center gap-2 rounded-full border px-2.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500/40 sm:px-3": true,
+          "inline-flex min-h-11 min-w-11 justify-center items-center gap-2 rounded-md border px-2.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500/40 sm:px-3": true,
           "border-sage-500/50 bg-sand-100 text-ink-900":
             isCurrentNavItem(searchHref),
-          "border-sand-300 bg-sand-50 text-ink-700 hover:border-sage-500/40 hover:text-ink-900":
+          "border-transparent text-ink-700 hover:bg-sand-100 hover:text-ink-900":
             !isCurrentNavItem(searchHref),
         }}
         aria-current={isCurrentNavItem(searchHref) ? "page" : undefined}
@@ -100,7 +100,7 @@ const searchHref = "/search";
         <span class="hidden lg:inline">Search</span>
       </a>
       <details name="site-controls" data-font-size-picker class="relative">
-        <summary class="flex min-h-11 min-w-11 justify-center cursor-pointer select-none list-none items-center gap-1 rounded-full border border-sand-300 bg-sand-50 px-2 text-xs font-semibold text-ink-700 transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none sm:gap-2 sm:px-3 [&::-webkit-details-marker]:hidden">
+        <summary class="flex min-h-11 min-w-11 justify-center cursor-pointer select-none list-none items-center gap-1 rounded-md border border-transparent bg-sand-50 px-2 text-xs font-semibold text-ink-700 transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none sm:gap-2 sm:px-3 [&::-webkit-details-marker]:hidden">
           <span class="sr-only">文字サイズを選択 </span>
           <span class="font-display text-sm leading-none" aria-hidden="true">
             Aa
@@ -110,7 +110,7 @@ const searchHref = "/search";
           </span>
           <span aria-hidden="true">▾</span>
         </summary>
-        <div class="absolute right-0 z-40 mt-2 w-[208px] max-w-[calc(100vw-0.75rem)] rounded-2xl border border-sand-200 bg-sand-50 p-2">
+        <div class="absolute right-0 z-40 mt-2 w-[208px] max-w-[calc(100vw-0.75rem)] rounded-lg border border-sand-200 bg-sand-50 p-2">
           <ul class="space-y-1">
             {fontSizeOptions.map((size) => (
               <li>
@@ -118,7 +118,7 @@ const searchHref = "/search";
                   type="button"
                   data-font-size-value={size.value}
                   data-font-size-label={size.label}
-                  class="flex min-h-11 w-full items-center justify-between rounded-xl border border-sand-200 bg-sand-50 px-3 py-2 text-left text-xs font-semibold text-ink-700 transition hover:border-sage-500/40 hover:bg-sand-100"
+                  class="flex min-h-11 w-full items-center justify-between rounded-md border border-transparent bg-sand-50 px-3 py-2 text-left text-xs font-semibold text-ink-700 transition hover:border-sage-500/40 hover:bg-sand-100"
                 >
                   <span>{size.label}</span>
                   <span
@@ -134,7 +134,7 @@ const searchHref = "/search";
         </div>
       </details>
       <details name="site-controls" data-theme-picker class="relative">
-        <summary class="flex min-h-11 min-w-11 justify-center cursor-pointer select-none list-none items-center gap-1 rounded-full border border-sand-300 bg-sand-50 px-2 text-xs font-semibold text-ink-700 transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none sm:gap-2 sm:px-3 [&::-webkit-details-marker]:hidden">
+        <summary class="flex min-h-11 min-w-11 justify-center cursor-pointer select-none list-none items-center gap-1 rounded-md border border-transparent bg-sand-50 px-2 text-xs font-semibold text-ink-700 transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none sm:gap-2 sm:px-3 [&::-webkit-details-marker]:hidden">
           <span class="sr-only">テーマを選択 </span>
           <span class="hidden sm:inline" data-theme-current-label>
             {defaultThemeLabel}
@@ -155,7 +155,7 @@ const searchHref = "/search";
           </span>
           <span aria-hidden="true">▾</span>
         </summary>
-        <div class="absolute right-0 z-40 mt-2 w-[256px] max-w-[calc(100vw-0.75rem)] rounded-2xl border border-sand-200 bg-sand-50 p-2">
+        <div class="absolute right-0 z-40 mt-2 w-[256px] max-w-[calc(100vw-0.75rem)] rounded-lg border border-sand-200 bg-sand-50 p-2">
           <ul class="max-h-80 space-y-1 overflow-auto pr-1">
             {themeModeOptions.map((theme) => (
               <li>
@@ -163,7 +163,7 @@ const searchHref = "/search";
                   type="button"
                   data-theme-value={theme.value}
                   data-theme-label={theme.label}
-                  class="flex min-h-11 w-full items-center justify-between rounded-xl border border-sand-200 bg-sand-50 px-3 py-2 text-left text-xs font-semibold text-ink-700 transition hover:border-sage-500/40 hover:bg-sand-100"
+                  class="flex min-h-11 w-full items-center justify-between rounded-md border border-transparent bg-sand-50 px-3 py-2 text-left text-xs font-semibold text-ink-700 transition hover:border-sage-500/40 hover:bg-sand-100"
                 >
                   <span>{theme.label}</span>
                   <span
@@ -192,20 +192,20 @@ const searchHref = "/search";
 
       <details name="site-controls" data-mobile-menu class="relative md:hidden">
         <summary
-          class="flex min-h-11 min-w-11 cursor-pointer select-none list-none items-center justify-center rounded-full border border-sand-300 bg-sand-50 text-ink-700 transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none [&::-webkit-details-marker]:hidden"
+          class="flex min-h-11 min-w-11 cursor-pointer select-none list-none items-center justify-center rounded-md border border-transparent bg-sand-50 text-ink-700 transition marker:content-none hover:border-sage-500/40 focus-visible:border-sage-500/40 focus-visible:outline-none [&::-webkit-details-marker]:hidden"
           aria-label="メニューを開く"
         >
           <span class="text-base leading-none" aria-hidden="true">
             ☰
           </span>
         </summary>
-        <div class="absolute right-0 z-40 mt-2 w-52 rounded-2xl border border-sand-200 bg-sand-50 p-2">
+        <div class="absolute right-0 z-40 mt-2 w-52 rounded-lg border border-sand-200 bg-sand-50 p-2">
           <nav class="flex flex-col" aria-label="Main mobile">
             {navItems.map((item) => (
               <a
                 href={item.href}
                 class:list={{
-                  "rounded-xl px-3 py-2 text-sm font-semibold transition": true,
+                  "rounded-md px-3 py-2 text-sm font-semibold transition": true,
                   "bg-sand-100 text-ink-900": isCurrentNavItem(item.href),
                   "text-ink-600 hover:bg-sand-100 hover:text-ink-900":
                     !isCurrentNavItem(item.href),

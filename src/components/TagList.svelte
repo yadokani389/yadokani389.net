@@ -5,21 +5,8 @@
 	export let basePath: string | null = null;
 
 	const buildHref = (tag: string) => {
-		if (!basePath) {
-			return null;
-		}
-
-		if (basePath === "/blog") {
-			const slug = toTagSlug(tag);
-			return `${basePath}/tags/${encodeURIComponent(slug)}`;
-		}
-
-		if (basePath === "/works") {
-			const slug = toTagSlug(tag);
-			return `${basePath}/tags/${encodeURIComponent(slug)}`;
-		}
-
-		return null;
+		if (basePath !== "/blog" && basePath !== "/works") return null;
+		return `${basePath}/tags/${encodeURIComponent(toTagSlug(tag))}`;
 	};
 </script>
 

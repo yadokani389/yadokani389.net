@@ -1,20 +1,11 @@
 ---
+import type { SearchSeedEntry } from "../lib/search/model";
 import SearchExperience from "../components/search/SearchExperience.svelte";
 import Layout from "../layouts/Layout.astro";
 import { getPublishedBlogPosts } from "../lib/blog/tags";
 import { getWorks } from "../lib/works/tags";
 import { PAGE_META } from "../seo/pageMeta";
 import { formatDate } from "../utils/formatDate";
-
-type SearchSeedEntry = {
-  title: string;
-  description: string;
-  href: string;
-  kind: "blog" | "works";
-  kindLabel: string;
-  dateValue: number;
-  dateLabel: string;
-};
 
 const blogPosts = await getPublishedBlogPosts();
 const works = await getWorks();

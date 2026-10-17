@@ -177,3 +177,73 @@ test("missing pages return a usable 404", async ({ page }) => {
     page.getByRole("link", { name: "トップページへ" }),
   ).toBeVisible();
 });
+
+test("search shares initialization and ignores results during the next debounce", async ({
+  page,
+}) => {
+  await page.clock.install({ time: new Date("2026-01-01T00:00:00Z") });
+  await page.clock.pauseAt(new Date("2026-01-01T00:00:01Z"));
+  await page.route("**/pagefind/pagefind.js", (route) =>
+    route.fulfill({
+      contentType: "application/javascript",
+      body: `
+      const html = document.documentElement;
+      const wait = (name) => new Promise((resolve) => document.addEventListener(name, resolve, { once: true }));
+      export async function init() {
+        html.dataset.initCount = String(Number(html.dataset.initCount ?? 0) + 1);
+        await wait("init-ready");
+      }
+      export async function search(term) {
+        html.dataset.requestedSearch = term;
+        await wait("finish-" + term);
+        return { results: [{ id: term, data: async () => {
+          html.dataset.completedSearch = term;
+          return { url: "/blog/" + term, meta: { title: term, type: "blog" } };
+        } }] };
+      }
+    `,
+    }),
+  );
+  await page.goto("/search");
+  const input = page.getByRole("searchbox");
+  const html = page.locator("html");
+  await input.fill("old");
+  await expect(html).toHaveAttribute("data-init-count", "1");
+  await page.clock.runFor(180);
+  await page.evaluate(() =>
+    globalThis.document.dispatchEvent(new globalThis.Event("init-ready")),
+  );
+  await expect(html).toHaveAttribute("data-requested-search", "old");
+  await expect(html).toHaveAttribute("data-init-count", "1");
+  await input.fill("new");
+  await page.evaluate(() =>
+    globalThis.document.dispatchEvent(new globalThis.Event("finish-old")),
+  );
+  await expect(html).toHaveAttribute("data-completed-search", "old");
+  await expect(page.locator(".search-status")).toHaveText("検索中...");
+  await expect(page.locator('.results-list a[href="/blog/old"]')).toHaveCount(
+    0,
+  );
+  await page.clock.runFor(180);
+  await expect(html).toHaveAttribute("data-requested-search", "new");
+  await page.evaluate(() =>
+    globalThis.document.dispatchEvent(new globalThis.Event("finish-new")),
+  );
+  await expect(page.locator('.results-list a[href="/blog/new"]')).toBeVisible();
+});
+
+test("search initialization failures show a recovery message", async ({
+  page,
+}) => {
+  await page.route("**/pagefind/pagefind.js", (route) =>
+    route.fulfill({
+      contentType: "application/javascript",
+      body: 'export async function init() { throw new Error("Unavailable"); }',
+    }),
+  );
+  await page.goto("/search?q=rust");
+  await expect(page.locator(".empty-state")).toContainText(
+    "ページを再読み込み",
+  );
+  await expect(page.locator(".empty-state")).not.toContainText("pnpm");
+});

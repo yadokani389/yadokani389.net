@@ -3,86 +3,19 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { buildSearchQueries } from "../../lib/search/query";
-
-	type SearchKind = "all" | "blog" | "works";
-
-	type SearchSeedEntry = {
-		title: string;
-		description: string;
-		href: string;
-		kind: "blog" | "works";
-		kindLabel: string;
-		dateValue: number;
-		dateLabel: string;
-	};
-
-	type SearchStats = {
-		blogCount: number;
-		worksCount: number;
-		totalCount: number;
-	};
-
-	interface SearchOption {
-		value: SearchKind;
-		label: string;
-		count: number;
-	}
-
-	interface SearchSubResult {
-		title: string;
-		url: string;
-		excerpt?: string;
-	}
-
-	interface PagefindSearchResultData {
-		url: string;
-		excerpt?: string;
-		meta: Record<string, string>;
-		sub_results?: SearchSubResult[];
-	}
-
-	interface PagefindSearchEntry {
-		id: string;
-		data: () => Promise<PagefindSearchResultData>;
-	}
-
-	interface PagefindSearchResponse {
-		results: PagefindSearchEntry[];
-	}
-
-	interface SearchFilters {
-		type?: "blog" | "works";
-	}
-
-	interface PagefindSearchOptions {
-		filters?: SearchFilters;
-		sort?: {
-			date: "asc" | "desc";
-		};
-	}
-
-	interface PagefindModule {
-		init: () => Promise<void>;
-		search: (
-			term: string,
-			options?: PagefindSearchOptions,
-		) => Promise<PagefindSearchResponse>;
-	}
-
-	interface SearchResultViewModel {
-		url: string;
-		title: string;
-		kind: "blog" | "works";
-		kindLabel: string;
-		dateLabel: string;
-		excerptSegments: ExcerptSegment[];
-		sectionTitle: string | null;
-	}
-
-	interface ExcerptSegment {
-		text: string;
-		highlighted: boolean;
-	}
+	import {
+		buildSearchUrl,
+		readSearchState,
+		getTypeLabel,
+		mergeSearchEntries,
+		toSearchResult,
+		type SearchKind,
+		type SearchSeedEntry,
+		type SearchStats,
+		type SearchOption,
+		type PagefindModule,
+		type SearchResultViewModel,
+	} from "../../lib/search/model";
 
 	export let recentEntries: SearchSeedEntry[] = [];
 	export let searchStats: SearchStats = {
@@ -93,7 +26,7 @@
 
 	const searchDelayMs = 180;
 
-	let pagefind: PagefindModule | null = null;
+	let pagefindPromise: Promise<PagefindModule> | null = null;
 	let pagefindError = "";
 	let hasMounted = false;
 	let isLoading = false;
@@ -106,29 +39,6 @@
 	let activeSearchToken = 0;
 	let searchOptions: SearchOption[];
 	let selectedTypeLabel: string;
-
-	const escapeHtml = (value: string): string =>
-		value
-			.replaceAll("&", "&amp;")
-			.replaceAll("<", "&lt;")
-			.replaceAll(">", "&gt;")
-			.replaceAll('"', "&quot;")
-			.replaceAll("'", "&#39;");
-
-	const normalizeSearchText = (value: string): string =>
-		value.toLocaleLowerCase("ja-JP").replace(/\s+/gu, "");
-
-	const getTypeLabel = (value: SearchKind): string => {
-		if (value === "blog") {
-			return "Blog";
-		}
-
-		if (value === "works") {
-			return "Works";
-		}
-
-		return "All";
-	};
 
 	const isTextInputTarget = (target: EventTarget | null): boolean => {
 		if (!(target instanceof HTMLElement)) {
@@ -143,97 +53,18 @@
 		);
 	};
 
-	const appendExcerptSegment = (
-		segments: ExcerptSegment[],
-		text: string,
-		highlighted: boolean,
-	) => {
-		const normalized = text.replace(/\s+/gu, " ");
-		if (!normalized.trim()) {
-			return;
-		}
-
-		const lastSegment = segments.at(-1);
-		if (lastSegment && lastSegment.highlighted === highlighted) {
-			lastSegment.text += normalized;
-			return;
-		}
-
-		segments.push({ text: normalized, highlighted });
-	};
-
-	const parseExcerptSegments = (value: string): ExcerptSegment[] => {
-		if (!value) {
-			return [];
-		}
-
-		const parsed = new DOMParser().parseFromString(
-			`<body>${value}</body>`,
-			"text/html",
-		);
-		const segments: ExcerptSegment[] = [];
-
-		const visit = (node: ChildNode, highlighted = false) => {
-			if (node.nodeType === Node.TEXT_NODE) {
-				appendExcerptSegment(segments, node.textContent ?? "", highlighted);
-				return;
-			}
-
-			if (!(node instanceof HTMLElement)) {
-				return;
-			}
-
-			const nextHighlighted = highlighted || node.tagName === "MARK";
-			for (const child of Array.from(node.childNodes)) {
-				visit(child, nextHighlighted);
-			}
-		};
-
-		for (const child of Array.from(parsed.body.childNodes)) {
-			visit(child);
-		}
-
-		const firstSegment = segments[0];
-		if (firstSegment) {
-			firstSegment.text = firstSegment.text.replace(/^[.。\s]+/u, "");
-			if (!firstSegment.text.trim()) {
-				segments.shift();
-			}
-		}
-
-		return segments;
-	};
-
 	const readUrlState = () => {
-		const searchParams = new URLSearchParams(window.location.search);
-		query = searchParams.get("q")?.trim() ?? "";
-		const nextType = searchParams.get("type");
-		selectedType =
-			nextType === "blog" || nextType === "works" ? nextType : "all";
+		const state = readSearchState(window.location.search);
+		query = state.query;
+		selectedType = state.type;
 	};
 
 	const writeUrlState = (nextQuery: string, nextType: SearchKind) => {
-		const searchParams = new URLSearchParams(window.location.search);
-		const trimmed = nextQuery.trim();
-
-		if (trimmed) {
-			searchParams.set("q", trimmed);
-		} else {
-			searchParams.delete("q");
-		}
-
-		if (nextType !== "all") {
-			searchParams.set("type", nextType);
-		} else {
-			searchParams.delete("type");
-		}
-
-		const nextUrl =
-			searchParams.size > 0
-				? `${window.location.pathname}?${searchParams.toString()}`
-				: window.location.pathname;
-
-		history.replaceState(history.state, "", nextUrl);
+		history.replaceState(
+			history.state,
+			"",
+			buildSearchUrl(window.location.href, nextQuery, nextType),
+		);
 	};
 
 	const clearPendingSearch = () => {
@@ -243,97 +74,21 @@
 		}
 	};
 
-	const buildSearchFilters = (kind: SearchKind): SearchFilters | undefined => {
-		if (kind === "all") {
-			return undefined;
+	const ensurePagefind = (): Promise<PagefindModule> => {
+		if (!pagefindPromise) {
+			const path = "/pagefind/pagefind.js";
+			pagefindPromise = import(/* @vite-ignore */ path)
+				.then(async (module) => {
+					const api = module as PagefindModule;
+					await api.init();
+					return api;
+				})
+				.catch((error) => {
+					pagefindPromise = null;
+					throw error;
+				});
 		}
-
-		return { type: kind };
-	};
-
-	const ensurePagefind = async (): Promise<PagefindModule | null> => {
-		if (pagefind) {
-			return pagefind;
-		}
-
-		try {
-			const pagefindPath = "/pagefind/pagefind.js";
-			const imported = (await import(
-				/* @vite-ignore */
-				pagefindPath
-			)) as unknown as PagefindModule;
-			await imported.init();
-			pagefind = imported;
-			pagefindError = "";
-			return imported;
-		} catch (error) {
-			console.error(error);
-			pagefindError =
-				"検索インデックスを準備中です。`pnpm run build` の後に検索できます。";
-			return null;
-		}
-	};
-
-	const mergeSearchEntries = (
-		responses: PagefindSearchResponse[],
-	): PagefindSearchEntry[] => {
-		const merged = new Map<string, PagefindSearchEntry>();
-
-		for (const response of responses) {
-			for (const entry of response.results) {
-				if (!merged.has(entry.id)) {
-					merged.set(entry.id, entry);
-				}
-			}
-		}
-
-		return Array.from(merged.values());
-	};
-
-	const pickBestMatch = (data: PagefindSearchResultData) => {
-		const title = data.meta.title ?? "Untitled";
-		const matchedSection = data.sub_results?.find(
-			(section) => section.url !== data.url,
-		);
-
-		return {
-			url: matchedSection?.url ?? data.url,
-			excerptHtml:
-				matchedSection?.excerpt ??
-				data.excerpt ??
-				escapeHtml(data.meta.description ?? ""),
-			sectionTitle:
-				matchedSection && matchedSection.title !== title
-					? matchedSection.title
-					: null,
-		};
-	};
-
-	const toSearchResult = (
-		data: PagefindSearchResultData,
-		queryTerm: string,
-	): SearchResultViewModel => {
-		const title = data.meta.title ?? "Untitled";
-		const kind = data.meta.type === "works" ? "works" : "blog";
-		const match = pickBestMatch(data);
-		const description = data.meta.description ?? "";
-		const queryMatchesTitle =
-			normalizeSearchText(queryTerm).length > 0 &&
-			normalizeSearchText(title).includes(normalizeSearchText(queryTerm));
-		const excerptSource =
-			queryMatchesTitle && !match.sectionTitle && description
-				? escapeHtml(description)
-				: match.excerptHtml;
-
-		return {
-			url: match.url,
-			title,
-			kind,
-			kindLabel: data.meta.kind ?? getTypeLabel(kind),
-			dateLabel: data.meta.dateLabel ?? "",
-			excerptSegments: parseExcerptSegments(excerptSource),
-			sectionTitle: match.sectionTitle,
-		};
+		return pagefindPromise;
 	};
 
 	const runSearch = async (nextQuery: string, nextType: SearchKind) => {
@@ -348,18 +103,13 @@
 			return;
 		}
 
-		pagefindError = "";
-		const api = await ensurePagefind();
-		if (!api || searchToken !== activeSearchToken) {
-			isLoading = false;
-			return;
-		}
-
 		try {
+			const api = await ensurePagefind();
+			if (searchToken !== activeSearchToken) return;
 			const responses = await Promise.all(
 				buildSearchQueries(trimmed).map((term) =>
 					api.search(term, {
-						filters: buildSearchFilters(nextType),
+						filters: nextType === "all" ? undefined : { type: nextType },
 						sort: { date: "desc" },
 					}),
 				),
@@ -385,7 +135,7 @@
 
 			results = [];
 			pagefindError =
-				"検索中に問題が起きました。少し待ってからもう一度試してください。";
+				"検索を読み込めませんでした。ページを再読み込みして、もう一度お試しください。";
 		} finally {
 			if (searchToken === activeSearchToken) {
 				isLoading = false;
@@ -395,9 +145,10 @@
 
 	const scheduleSearch = (nextQuery: string, nextType: SearchKind) => {
 		clearPendingSearch();
+		activeSearchToken += 1;
+		pagefindError = "";
 
 		if (!nextQuery.trim()) {
-			activeSearchToken += 1;
 			results = [];
 			isLoading = false;
 			return;
@@ -440,7 +191,7 @@
 	};
 
 	const handleInputFocus = () => {
-		void ensurePagefind();
+		void ensurePagefind().catch(() => null);
 	};
 
 	$: searchOptions = [
@@ -472,6 +223,7 @@
 		window.addEventListener("popstate", handlePopState);
 
 		return () => {
+			activeSearchToken += 1;
 			window.removeEventListener("keydown", handleGlobalKeydown);
 			window.removeEventListener("popstate", handlePopState);
 			clearPendingSearch();

@@ -3,11 +3,10 @@ import type { CollectionEntry } from "astro:content";
 import type { GetStaticPathsOptions, Page } from "astro";
 import EntryCard from "../../../../components/EntryCard.astro";
 import Pagination from "../../../../components/Pagination.astro";
+import { buildTagIndex, getEntriesByTagName } from "../../../../lib/tags/index";
 import Layout from "../../../../layouts/Layout.astro";
 import {
   BLOG_TAGS_PAGE_SIZE,
-  buildBlogTagIndex,
-  getBlogPostsByTagName,
   getPublishedBlogPosts,
 } from "../../../../lib/blog/tags";
 
@@ -19,10 +18,10 @@ interface Props {
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
   const posts = await getPublishedBlogPosts();
-  const tags = buildBlogTagIndex(posts);
+  const tags = buildTagIndex(posts);
 
   return tags.flatMap((tag) =>
-    paginate(getBlogPostsByTagName(posts, tag.name), {
+    paginate(getEntriesByTagName(posts, tag.name), {
       params: { tag: tag.slug },
       props: {
         tagName: tag.name,

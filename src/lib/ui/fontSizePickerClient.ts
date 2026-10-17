@@ -99,15 +99,4 @@ export function bootFontSizePicker(config: FontSizePickerConfig): void {
       }
     });
   });
-
-  globalThis.document.addEventListener("click", (event) => {
-    if (!(fontSizePicker instanceof globalThis.HTMLDetailsElement)) return;
-    if (!fontSizePicker.open) return;
-
-    const target = event.target;
-    if (!(target instanceof globalThis.Node)) return;
-    if (fontSizePicker.contains(target)) return;
-
-    fontSizePicker.open = false;
-  });
 }

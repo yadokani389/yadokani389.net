@@ -1,0 +1,39 @@
+---
+import type { Page } from "astro";
+
+interface Props {
+  page: Pick<Page, "currentPage" | "lastPage" | "url">;
+  label: string;
+}
+
+const { page, label } = Astro.props;
+---
+
+{page.lastPage > 1 && (
+  <nav
+    class="flex flex-wrap items-center justify-center gap-3 rounded-2xl border border-sand-200 bg-sand-50 px-4 py-3 text-sm font-semibold text-ink-700"
+    aria-label={label}
+  >
+    {page.url.prev ? (
+      <a class="pagination-link" href={page.url.prev} rel="prev">
+        ← 前へ
+      </a>
+    ) : (
+      <span class="pagination-link" aria-disabled="true">
+        ← 前へ
+      </span>
+    )}
+    <span class="px-2 text-xs text-ink-500">
+      {page.currentPage} / {page.lastPage}
+    </span>
+    {page.url.next ? (
+      <a class="pagination-link" href={page.url.next} rel="next">
+        次へ →
+      </a>
+    ) : (
+      <span class="pagination-link" aria-disabled="true">
+        次へ →
+      </span>
+    )}
+  </nav>
+)}

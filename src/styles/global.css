@@ -15,22 +15,22 @@
   --color-ink-900: var(--color-base-content);
   --color-ink-800: color-mix(
     in oklab,
-    var(--color-base-content) 88%,
+    var(--color-base-content) 94%,
     var(--color-base-100)
   );
   --color-ink-700: color-mix(
     in oklab,
-    var(--color-base-content) 76%,
+    var(--color-base-content) 88%,
     var(--color-base-100)
   );
   --color-ink-600: color-mix(
     in oklab,
-    var(--color-base-content) 64%,
+    var(--color-base-content) 82%,
     var(--color-base-100)
   );
   --color-ink-500: color-mix(
     in oklab,
-    var(--color-base-content) 52%,
+    var(--color-base-content) 76%,
     var(--color-base-100)
   );
 
@@ -285,4 +285,60 @@
 [data-budoux] {
   word-break: keep-all;
   overflow-wrap: anywhere;
+}
+
+@layer components {
+  .content-card {
+    @apply rounded-2xl border border-sand-200 bg-sand-50 transition-colors;
+  }
+
+  .content-card:hover {
+    @apply border-sage-500/40 shadow-soft;
+  }
+
+  .content-card:focus-within {
+    outline: 2px solid var(--color-base-content);
+    outline-offset: 3px;
+  }
+
+  .card-title-link::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+  }
+
+  .card-title-link:focus-visible {
+    outline: none;
+  }
+
+  .pagination-link {
+    @apply inline-flex min-h-11 items-center rounded-full border border-sand-200 px-3 py-1;
+  }
+
+  a.pagination-link:hover {
+    @apply border-sage-500/40 text-sage-700;
+  }
+}
+
+:where(a, button, summary, input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-base-content);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .group:hover img {
+    transform: none;
+    scale: none;
+  }
 }

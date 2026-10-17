@@ -235,12 +235,11 @@ const defaultFontSizeLabel =
         bootThemePicker,
         readThemePickerConfig,
       } from "../lib/theme/themePickerClient";
-      import { bootCardLinkNavigation } from "../lib/ui/cardLinkClient";
       import {
         bootFontSizePicker,
         readFontSizePickerConfig,
       } from "../lib/ui/fontSizePickerClient";
-      import { bootMobileMenuDismiss } from "../lib/ui/mobileMenuClient";
+      import { bootDetailsDismiss } from "../lib/ui/detailsClient";
 
       const config = readThemePickerConfig();
       if (config) {
@@ -252,8 +251,7 @@ const defaultFontSizeLabel =
         bootFontSizePicker(fontSizeConfig);
       }
 
-      bootMobileMenuDismiss();
-      bootCardLinkNavigation();
+      bootDetailsDismiss();
     </script>
   </body>
 </html>

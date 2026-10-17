@@ -139,6 +139,7 @@ export function bootThemePicker(config: ThemePickerConfig): void {
       option.classList.toggle("border-sage-500/40", isActive);
       option.classList.toggle("bg-sand-100", isActive);
       option.classList.toggle("text-ink-900", isActive);
+      option.setAttribute("aria-pressed", String(isActive));
     });
 
     if (themeCurrentLabel instanceof globalThis.HTMLElement) {
@@ -206,16 +207,5 @@ export function bootThemePicker(config: ThemePickerConfig): void {
           config.defaultThemeMode,
       );
     }
-  });
-
-  globalThis.document.addEventListener("click", (event) => {
-    if (!(themePicker instanceof globalThis.HTMLDetailsElement)) return;
-    if (!themePicker.open) return;
-
-    const target = event.target;
-    if (!(target instanceof globalThis.Node)) return;
-    if (themePicker.contains(target)) return;
-
-    themePicker.open = false;
   });
 }

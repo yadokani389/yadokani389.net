@@ -6,7 +6,7 @@
 
 	type SearchKind = "all" | "blog" | "works";
 
-	export type SearchSeedEntry = {
+	type SearchSeedEntry = {
 		title: string;
 		description: string;
 		href: string;
@@ -16,7 +16,7 @@
 		dateLabel: string;
 	};
 
-	export type SearchStats = {
+	type SearchStats = {
 		blogCount: number;
 		worksCount: number;
 		totalCount: number;
@@ -96,17 +96,16 @@
 	let pagefind: PagefindModule | null = null;
 	let pagefindError = "";
 	let hasMounted = false;
-	let isReady = false;
 	let isLoading = false;
 	let query = "";
 	let selectedType: SearchKind = "all";
 	let results: SearchResultViewModel[] = [];
-	let filteredRecentEntries: SearchSeedEntry[] = [];
+	let filteredRecentEntries: SearchSeedEntry[];
 	let inputElement: HTMLInputElement | null = null;
 	let searchTimer: ReturnType<typeof setTimeout> | undefined;
 	let activeSearchToken = 0;
-	let searchOptions: SearchOption[] = [];
-	let selectedTypeLabel = "All";
+	let searchOptions: SearchOption[];
+	let selectedTypeLabel: string;
 
 	const escapeHtml = (value: string): string =>
 		value
@@ -229,9 +228,10 @@
 			searchParams.delete("type");
 		}
 
-		const nextUrl = searchParams.size > 0
-			? `${window.location.pathname}?${searchParams.toString()}`
-			: window.location.pathname;
+		const nextUrl =
+			searchParams.size > 0
+				? `${window.location.pathname}?${searchParams.toString()}`
+				: window.location.pathname;
 
 		history.replaceState(history.state, "", nextUrl);
 	};
@@ -257,20 +257,19 @@
 		}
 
 		try {
+			const pagefindPath = "/pagefind/pagefind.js";
 			const imported = (await import(
 				/* @vite-ignore */
-				"/pagefind/pagefind.js"
+				pagefindPath
 			)) as unknown as PagefindModule;
 			await imported.init();
 			pagefind = imported;
-			isReady = true;
 			pagefindError = "";
 			return imported;
 		} catch (error) {
 			console.error(error);
 			pagefindError =
 				"検索インデックスを準備中です。`pnpm run build` の後に検索できます。";
-			isReady = false;
 			return null;
 		}
 	};
@@ -632,7 +631,9 @@
 	{:else}
 		<section class="empty-state">
 			<p>一致する結果はありません。</p>
-			<p class="empty-detail">検索語を変えるか、対象を切り替えて試してください。</p>
+			<p class="empty-detail">
+				検索語を変えるか、対象を切り替えて試してください。
+			</p>
 		</section>
 	{/if}
 </div>
@@ -654,7 +655,7 @@
 		gap: 0.75rem;
 		border: 1px solid var(--color-sand-200);
 		border-radius: 0.9rem;
-		background: color-mix(in oklab, var(--color-sand-50) 94%, white);
+		background: var(--color-sand-50);
 		padding: 0 0.8rem;
 		transition:
 			border-color 160ms ease,
@@ -663,8 +664,15 @@
 	}
 
 	.search-field:focus-within {
-		border-color: color-mix(in oklab, var(--color-sage-500) 45%, var(--color-sand-200));
-		box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-sage-500) 10%, transparent);
+		outline: 2px solid var(--color-base-content);
+		outline-offset: 3px;
+		border-color: color-mix(
+			in oklab,
+			var(--color-sage-500) 45%,
+			var(--color-sand-200)
+		);
+		box-shadow: 0 0 0 3px
+			color-mix(in oklab, var(--color-sage-500) 10%, transparent);
 		background: var(--color-sand-50);
 	}
 
@@ -697,6 +705,8 @@
 	.clear-button {
 		border: 0;
 		background: transparent;
+		min-height: 2.75rem;
+		min-width: 2.75rem;
 		padding: 0.25rem;
 		font: inherit;
 		font-size: 1.1rem;
@@ -712,8 +722,8 @@
 	.clear-button:focus-visible,
 	.type-switcher button:focus-visible,
 	.result-link:focus-visible {
-		outline: none;
-		box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-sage-500) 12%, transparent);
+		outline: 2px solid var(--color-base-content);
+		outline-offset: 3px;
 	}
 
 	.search-toolbar {
@@ -731,6 +741,7 @@
 	}
 
 	.type-switcher button {
+		min-height: 2.75rem;
 		display: inline-flex;
 		align-items: center;
 		gap: 0.45rem;
@@ -751,7 +762,11 @@
 
 	.type-switcher button:hover,
 	.type-switcher button.selected {
-		border-color: color-mix(in oklab, var(--color-sage-500) 40%, var(--color-sand-200));
+		border-color: color-mix(
+			in oklab,
+			var(--color-sage-500) 40%,
+			var(--color-sand-200)
+		);
 		background: color-mix(
 			in oklab,
 			var(--color-sage-500) 12%,
@@ -911,7 +926,11 @@
 	}
 
 	.search-result-excerpt span.highlighted {
-		background: color-mix(in oklab, var(--color-sage-500) 16%, white);
+		background: color-mix(
+			in oklab,
+			var(--color-sage-500) 16%,
+			var(--color-sand-50)
+		);
 		border-radius: 0.2rem;
 		padding: 0 0.15rem;
 		color: var(--color-ink-900);

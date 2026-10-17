@@ -1,0 +1,56 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import TagList from "./TagList.svelte";
+import { formatDate } from "../utils/formatDate";
+
+interface Props {
+  entry: CollectionEntry<"blog"> | CollectionEntry<"works">;
+}
+
+const { entry } = Astro.props;
+const href = `/${entry.collection}/${entry.id}`;
+const thumbnail =
+  entry.collection === "works" ? entry.data.thumbnail : undefined;
+---
+
+<article
+  class:list={[
+    "content-card group relative flex h-full flex-col gap-4",
+    entry.collection === "works" ? "p-5" : "p-6",
+  ]}
+>
+  {thumbnail && (
+    <div class="overflow-hidden rounded-2xl border border-sand-200 bg-sand-50">
+      <Image
+        class="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        src={thumbnail}
+        alt={`${entry.data.title} のサムネイル`}
+        width={1200}
+        height={630}
+        loading="lazy"
+      />
+    </div>
+  )}
+  {entry.collection === "blog" && (
+    <time
+      class="text-xs font-semibold text-ink-500"
+      datetime={entry.data.date.toISOString()}
+    >
+      {formatDate(entry.data.date)}
+    </time>
+  )}
+  <div>
+    <h2 class="text-xl font-display text-ink-900">
+      <a class="card-title-link" href={href}>
+        {entry.data.title}
+      </a>
+    </h2>
+    <p class="mt-2 text-sm leading-relaxed text-ink-600">
+      {entry.data.description}
+    </p>
+  </div>
+  <div class="mt-2">
+    <TagList tags={entry.data.tags ?? []} basePath={`/${entry.collection}`} />
+  </div>
+</article>

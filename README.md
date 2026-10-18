@@ -17,7 +17,7 @@ The pnpm overrides select security fixes for Typography's selector parser and
 remark-math's KaTeX dependency; remove them when the upstream dependency ranges
 include the fixed versions.
 
-Run `nix flake check` for Nix formatting, workflow validation, and typo checks.
+Run `nix flake check` for Nix formatting and typo checks.
 The sandbox skips pnpm hooks because it has no `node_modules`. Run
 `pnpm check` for formatting, lint, Astro and Svelte types, prose, unit tests,
 the production build, and unused dependencies. `pnpm typecheck` runs only the type checks.
@@ -33,8 +33,9 @@ export PLAYWRIGHT_CHROMIUM_EXECUTABLE="$(nix build .#chromium --print-out-paths 
 pnpm check:full
 ```
 
-Preview Workers use `public/_headers` to send `X-Robots-Tag: noindex` on
-`yadokani389-net-preview-*.yadokani389.workers.dev`. Production domains are not matched.
+Workers Builds uses Worker Previews on the production Worker. Cloudflare adds
+`X-Robots-Tag: noindex` to Preview `workers.dev` URLs; production domains are
+not included.
 
 The search feature uses Pagefind, and its index is generated during `pnpm run build`.
 
@@ -46,25 +47,48 @@ pnpm run build
 pnpm run preview
 ```
 
-## Deployment
+## Cloudflare Workers Builds
 
 `pnpm build` generates the site, Pagefind index, and self-contained Cloudflare
 Build Output under `.cloudflare/output/v0/`. The build uses Cloudflare's output
 utilities directly, keeping Astro's static build independent of a Worker bundler.
 Build-time tools stay in `dependencies`; validation tools stay in `devDependencies`.
 
+Run CI locally before pushing:
+
 ```sh
+pnpm check:full
+nix flake check
+```
+
+Workers Builds watches the `main` branch and deploys it to production. Pull
+requests build Worker Previews and receive a Preview URL comment from Cloudflare.
+GitHub Actions does not run CI or deploy this site.
+
+| Setting        | Production                                            | Preview                                                           |
+| -------------- | ----------------------------------------------------- | ----------------------------------------------------------------- |
+| Build command  | `pnpm install --frozen-lockfile --prod && pnpm build` | `pnpm install --frozen-lockfile --prod && pnpm run build:preview` |
+| Deploy command | `pnpm run deploy`                                     | `pnpm run deploy:preview`                                         |
+| Preview builds | —                                                     | enabled                                                           |
+
+Both build triggers set `PNPM_VERSION=12.14.0` and
+`SKIP_DEPENDENCY_INSTALL=1`; build commands install only production dependencies.
+
+## Local deployment
+
+`pnpm build` creates the Cloudflare Build Output. Authenticate with `cf` before
+deploying locally:
+
+```sh
+pnpm exec cf auth login
 pnpm build
 pnpm exec cf deploy --prebuilt --mode production --dry-run
 pnpm run deploy
 ```
 
-Authenticate locally with `pnpm exec cf auth login`. CI uses
-`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
-Production domains and preview Worker names are defined in `cloudflare.config.ts`.
-CI sets `CLOUDFLARE_PREVIEW_NUMBER` and `SITE_URL` for pull request builds, then
-uses `pnpm run deploy:preview` to deploy the same tested assets. Preview Workers keep
-the existing URL pattern and `noindex` header, and are deleted when the PR closes.
+Production domains and Worker Preview behavior are defined in
+`cloudflare.config.ts`. Preview builds use the same Worker name and do not bind
+production domains.
 
 ## OG image
 

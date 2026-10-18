@@ -39,7 +39,6 @@
           pre-commit.settings = {
             src = ./.;
             hooks = {
-              actionlint.enable = true;
               treefmt.enable = true;
               prettier = {
                 enable = true;

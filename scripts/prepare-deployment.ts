@@ -11,9 +11,10 @@ import { join } from "node:path";
 import process from "node:process";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
+const isPreview = process.env.CLOUDFLARE_PREVIEW_BUILD === "true";
 const context = {
-  mode: process.env.CLOUDFLARE_PREVIEW_NUMBER ? "preview" : "production",
-  isPreview: false,
+  mode: isPreview ? "preview" : "production",
+  isPreview,
 };
 const result = await resolveAndParseConfig(config, context);
 if (!result.success) throw result.error;

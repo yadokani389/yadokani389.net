@@ -50,7 +50,7 @@ const { page, tagName, totalPosts } = Astro.props as Props;
       <p class="text-sm text-ink-600">{totalPosts}件の記事</p>
     </header>
 
-    <div class="grid gap-6">
+    <div class="grid">
       {page.data.map((entry) => (
         <EntryCard {entry} />
       ))}

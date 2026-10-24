@@ -290,11 +290,19 @@
 
 @layer components {
   .content-card {
-    @apply border-b border-sand-200 py-6 transition-colors;
+    @apply relative border-b border-sand-300/70 py-4 transition-colors;
+  }
+
+  .content-card:first-child {
+    @apply border-t;
   }
 
   .content-card:hover {
     @apply border-sage-500;
+  }
+
+  .content-card:has(+ .content-card:not(.home-work):hover) {
+    @apply border-b-sage-500;
   }
 
   .content-card:hover h2 {
@@ -317,19 +325,10 @@
     transform: translateX(4px);
   }
 
-  .content-card:focus-within {
-    outline: 2px solid var(--color-base-content);
-    outline-offset: 3px;
-  }
-
   .card-title-link::after {
     position: absolute;
     inset: 0;
     content: "";
-  }
-
-  .card-title-link:focus-visible {
-    outline: none;
   }
 
   .pagination-link {

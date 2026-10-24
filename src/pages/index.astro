@@ -50,9 +50,9 @@ const works = (await getCollection("works"))
           一覧へ <span aria-hidden="true">→</span>
         </a>
       </div>
-      <div class="border-t border-sand-200">
+      <div>
         {posts.map((post) => (
-          <a class="home-post group" href={`/blog/${post.id}`}>
+          <a class="content-card home-post group" href={`/blog/${post.id}`}>
             <time
               class="text-xs text-ink-500"
               datetime={post.data.date.toISOString()}
@@ -87,7 +87,7 @@ const works = (await getCollection("works"))
       </div>
       <div class="grid gap-x-8 gap-y-6 md:grid-cols-3">
         {works.map((work) => (
-          <a class="home-work group" href={`/works/${work.id}`}>
+          <a class="content-card home-work group" href={`/works/${work.id}`}>
             <time
               class="text-xs text-ink-500"
               datetime={work.data.date.toISOString()}
@@ -100,12 +100,6 @@ const works = (await getCollection("works"))
             <p class="mt-3 text-sm leading-loose text-ink-600">
               {work.data.description}
             </p>
-            <span class="mt-auto inline-flex items-center gap-5 pt-6 text-sm text-ink-700">
-              詳細を見る{" "}
-              <span class="home-arrow" aria-hidden="true">
-                →
-              </span>
-            </span>
           </a>
         ))}
       </div>
@@ -141,13 +135,7 @@ const works = (await getCollection("works"))
     grid-template-columns: 8rem minmax(0, 1fr) auto;
     align-items: center;
     gap: 2rem;
-    border-bottom: 1px solid var(--color-sand-200);
     padding-block: 1.75rem;
-  }
-
-  .home-post:hover,
-  .home-work:hover {
-    border-color: var(--color-sage-500);
   }
 
   .home-post h3 {
@@ -157,7 +145,7 @@ const works = (await getCollection("works"))
   .home-work {
     display: flex;
     flex-direction: column;
-    border-bottom: 1px solid var(--color-sand-200);
+    border-top: 0;
     padding-block: 1.5rem;
   }
 

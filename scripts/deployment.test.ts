@@ -10,7 +10,7 @@ test("Worker Previews share the Worker name and keep production domains isolated
     "www.yadokani389.net",
   ]);
   assert.equal(production.assets.notFoundHandling, "404-page");
-  assert.equal(production.previewUrls, false);
+  assert.equal(production.previewUrls, true);
   assert.throws(
     () => config({ mode: "typo", isPreview: false }),
     /Unsupported/,

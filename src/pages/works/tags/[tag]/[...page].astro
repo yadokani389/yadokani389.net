@@ -47,7 +47,7 @@ const { page, tagName, totalWorks } = Astro.props as Props;
       <p class="text-sm text-ink-600">{totalWorks}件の作品</p>
     </header>
 
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid">
       {page.data.map((entry) => (
         <EntryCard {entry} />
       ))}

@@ -64,6 +64,26 @@ test("search finds Japanese text, filters content, and restores URL state", asyn
 });
 
 for (const kind of ["blog", "works"]) {
+  test(`${kind} cards show keyboard focus without a mouse focus ring`, async ({
+    page,
+  }) => {
+    await page.goto(`/${kind}`);
+    const card = page.locator(".content-card").first();
+    const link = card.locator(".card-title-link");
+    const href = await link.getAttribute("href");
+    await link.hover();
+    await page.mouse.down();
+    await expect(card).toHaveCSS("outline-style", "none");
+    await expect(link).toHaveCSS("outline-style", "none");
+    await page.mouse.up();
+    await expect(page).toHaveURL(new RegExp(`${href}/?$`));
+    await page.goto(`/${kind}`);
+    await page.keyboard.press("Tab");
+    await link.focus();
+    await expect(link).toHaveCSS("outline-style", "solid");
+    await expect(card).toHaveCSS("outline-style", "none");
+  });
+
   test(`${kind} tag links lead to an archive and article`, async ({ page }) => {
     await page.goto(`/${kind}`);
     await page.locator(`a[href^="/${kind}/tags/"]`).first().click();

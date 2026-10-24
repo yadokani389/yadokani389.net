@@ -44,7 +44,7 @@ const pagefindDateValue = date.getTime().toString();
   modifiedTime={lastmod?.toISOString()}
   tags={tags}
 >
-  <div class="mx-auto flex max-w-4xl flex-col gap-8" data-pagefind-body>
+  <div class="mx-auto flex max-w-4xl flex-col gap-6" data-pagefind-body>
     <div class="sr-only" aria-hidden="true">
       <span data-pagefind-meta={`kind:${searchLabel}`}></span>
       <span data-pagefind-meta={`type:${searchType}`}></span>
@@ -85,13 +85,8 @@ const pagefindDateValue = date.getTime().toString();
           </div>
         )}
       </div>
+      {tags.length > 0 && <TagList tags={tags} basePath={tagBasePath} />}
     </header>
-
-    {tags.length > 0 && (
-      <div class="mt-1">
-        <TagList tags={tags} basePath={tagBasePath} />
-      </div>
-    )}
 
     <div class="prose max-w-none">
       <slot />

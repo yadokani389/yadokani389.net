@@ -14,7 +14,7 @@ const thumbnail =
   entry.collection === "works" ? entry.data.thumbnail : undefined;
 ---
 
-<article class="content-card group relative flex h-full flex-col gap-4">
+<article class="content-card group flex flex-col gap-2">
   {thumbnail && (
     <div class="overflow-hidden rounded-md border border-sand-200 bg-sand-50">
       <Image
@@ -41,11 +41,11 @@ const thumbnail =
         {entry.data.title}
       </a>
     </h2>
-    <p class="mt-2 text-sm leading-relaxed text-ink-600">
+    <p class="mt-1 text-sm leading-relaxed text-ink-600">
       {entry.data.description}
     </p>
   </div>
-  <div class="mt-2">
+  <div>
     <TagList tags={entry.data.tags ?? []} basePath={`/${entry.collection}`} />
   </div>
 </article>

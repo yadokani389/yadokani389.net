@@ -15,7 +15,7 @@ export default defineConfig(({ mode, isPreview }) => {
       compatibilityDate: "2026-01-20",
       assets: { notFoundHandling: "404-page" },
       workersDev: true,
-      previewUrls: isPreview,
+      previewUrls: true,
       domains: isProduction ? ["yadokani389.net", "www.yadokani389.net"] : [],
     },
   };

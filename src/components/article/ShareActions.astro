@@ -1,0 +1,171 @@
+---
+import { Icon } from "astro-icon/components";
+import { SITE_URL } from "../../consts";
+
+interface Props {
+  title: string;
+  placement?: "inline" | "side";
+}
+
+const { title, placement = "inline" } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site ?? SITE_URL).href;
+const xUrl = new URL("https://x.com/intent/tweet");
+xUrl.search = new URLSearchParams({ text: title, url }).toString();
+---
+
+<div
+  class:list={[
+    "share-actions",
+    { "share-actions--side": placement === "side" },
+  ]}
+  data-share-actions={placement}
+  data-share-title={title}
+  data-share-url={url}
+  data-pagefind-ignore
+>
+  <div class="share-controls">
+    <div class="share-buttons flex flex-wrap justify-end">
+      <a
+        class="share-action"
+        href={xUrl.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Xで共有"
+        title="Xで共有"
+      >
+        <Icon name="simple-icons:x" class="h-5 w-5" aria-hidden="true" />
+      </a>
+      <button
+        class="share-action"
+        type="button"
+        data-share-action="copy"
+        aria-label="リンクをコピー"
+        title="リンクをコピー"
+        hidden
+      >
+        <Icon name="lucide:link" class="h-5 w-5" aria-hidden="true" />
+      </button>
+      <button
+        class="share-action"
+        type="button"
+        data-share-action="native"
+        aria-label="その他の共有"
+        title="その他の共有"
+        hidden
+      >
+        <Icon name="lucide:share" class="h-5 w-5" aria-hidden="true" />
+      </button>
+    </div>
+    <p
+      role="status"
+      class="share-status mt-2 text-right text-sm text-ink-600"
+    ></p>
+  </div>
+</div>
+
+<script>
+  for (const root of globalThis.document.querySelectorAll<globalThis.HTMLElement>(
+    "[data-share-actions]",
+  )) {
+    const { shareTitle: title, shareUrl: url } = root.dataset;
+    const status =
+      root.querySelector<globalThis.HTMLElement>('[role="status"]');
+    if (!title || !url || !status) continue;
+
+    for (const button of root.querySelectorAll<globalThis.HTMLButtonElement>(
+      "[data-share-action]",
+    )) {
+      const native = button.dataset.shareAction === "native";
+      button.hidden = native
+        ? typeof globalThis.navigator.share !== "function"
+        : typeof globalThis.navigator.clipboard?.writeText !== "function";
+
+      button.addEventListener("click", async () => {
+        status.textContent = "";
+        button.disabled = true;
+        try {
+          if (native) {
+            await globalThis.navigator.share({ title, url });
+          } else {
+            await globalThis.navigator.clipboard.writeText(url);
+            status.textContent = "リンクをコピーしました";
+          }
+        } catch (error) {
+          if (native && error instanceof Error && error.name === "AbortError") {
+            return;
+          }
+          status.textContent = native
+            ? "共有できませんでした。再度お試しください。"
+            : "コピーできませんでした。アドレスバーからURLをコピーしてください。";
+        } finally {
+          button.disabled = false;
+        }
+      });
+    }
+  }
+</script>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .share-controls {
+    @apply border-t border-sand-200 pt-6;
+  }
+
+  .share-action {
+    @apply inline-flex min-h-11 min-w-11 items-center justify-center cursor-pointer rounded-full bg-sand-50 text-ink-700 transition-colors hover:bg-sand-100 hover:text-sage-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-500 disabled:cursor-wait disabled:opacity-60;
+  }
+
+  .share-action[hidden] {
+    display: none;
+  }
+
+  .share-actions--side {
+    display: none;
+  }
+
+  @media (width >= 65rem) {
+    .share-actions--side {
+      display: block;
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: calc(100% + 1rem);
+      inline-size: 3rem;
+    }
+
+    .share-actions--side .share-controls {
+      position: sticky;
+      inset-block-start: 7rem;
+      border: 0;
+      padding: 0;
+    }
+
+    .share-actions--side .share-buttons {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .share-actions--side .share-action {
+      @apply min-h-12 min-w-12;
+    }
+
+    .share-actions--side .share-status:not(:empty) {
+      @apply rounded-md border border-sand-200 bg-sand-100 px-3 py-2;
+      position: fixed;
+      inset-block-end: 1.5rem;
+      inset-inline-start: 50%;
+      z-index: 30;
+      inline-size: max-content;
+      max-inline-size: calc(100vw - 3rem);
+      transform: translateX(-50%);
+    }
+  }
+</style>
+
+<style is:global>
+  @media (width >= 65rem) and (width < 72rem) {
+    html[data-font-size="large"] [data-share-actions="side"] {
+      display: none;
+    }
+  }
+</style>

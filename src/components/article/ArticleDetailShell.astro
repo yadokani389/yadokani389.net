@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 import TagList from "../TagList.svelte";
 import Budoux from "../Budoux.astro";
+import ShareActions from "./ShareActions.astro";
 import Layout from "../../layouts/Layout.astro";
 import { formatDate } from "../../utils/formatDate";
 
@@ -45,7 +46,10 @@ const pagefindDateValue = date.getTime().toString();
   modifiedTime={lastmod?.toISOString()}
   tags={tags}
 >
-  <div class="mx-auto flex max-w-4xl flex-col gap-6" data-pagefind-body>
+  <div
+    class="relative mx-auto flex max-w-4xl flex-col gap-6"
+    data-pagefind-body
+  >
     <div class="sr-only" aria-hidden="true">
       <span data-pagefind-meta={`kind:${searchLabel}`}></span>
       <span data-pagefind-meta={`type:${searchType}`}></span>
@@ -93,5 +97,7 @@ const pagefindDateValue = date.getTime().toString();
     <div class="prose max-w-none">
       <slot />
     </div>
+    <ShareActions title={title} />
+    <ShareActions title={title} placement="side" />
   </div>
 </Layout>

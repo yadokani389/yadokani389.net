@@ -8,8 +8,8 @@ import { chromium } from "@playwright/test";
 import sharp from "sharp";
 
 const images = [
-  { view: "default", path: "../public/images/site-og-v1.png" },
-  { view: "article", path: "../assets/og/article-base-v11.png" },
+  { view: "default", path: "../public/images/site-og.png" },
+  { view: "article", path: "../assets/og/article-base.png" },
 ];
 const temporary = await mkdtemp(join(tmpdir(), "yadokani389-og-"));
 const browser = await chromium.launch({

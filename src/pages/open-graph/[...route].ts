@@ -46,7 +46,7 @@ export const { getStaticPaths, GET } = await OGImageRoute({
       },
       bgGradient,
       bgImage: {
-        path: "assets/og/article-base-v11.png",
+        path: "assets/og/article-base.png",
         fit: "cover",
       },
       padding: 90,

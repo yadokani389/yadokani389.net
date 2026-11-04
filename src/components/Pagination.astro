@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import type { Page } from "astro";
 
 interface Props {
@@ -16,11 +17,21 @@ const { page, label } = Astro.props;
   >
     {page.url.prev ? (
       <a class="pagination-link" href={page.url.prev} rel="prev">
-        ← 前へ
+        <Icon
+          name="lucide:arrow-left"
+          class="mr-2 h-4 w-4"
+          aria-hidden="true"
+        />{" "}
+        前へ
       </a>
     ) : (
       <span class="pagination-link" aria-disabled="true">
-        ← 前へ
+        <Icon
+          name="lucide:arrow-left"
+          class="mr-2 h-4 w-4"
+          aria-hidden="true"
+        />{" "}
+        前へ
       </span>
     )}
     <span class="px-2 text-xs text-ink-500">
@@ -28,11 +39,21 @@ const { page, label } = Astro.props;
     </span>
     {page.url.next ? (
       <a class="pagination-link" href={page.url.next} rel="next">
-        次へ →
+        次へ{" "}
+        <Icon
+          name="lucide:arrow-right"
+          class="ml-2 h-4 w-4"
+          aria-hidden="true"
+        />
       </a>
     ) : (
       <span class="pagination-link" aria-disabled="true">
-        次へ →
+        次へ{" "}
+        <Icon
+          name="lucide:arrow-right"
+          class="ml-2 h-4 w-4"
+          aria-hidden="true"
+        />
       </span>
     )}
   </nav>

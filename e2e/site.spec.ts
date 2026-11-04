@@ -16,6 +16,18 @@ for (const path of ["/", "/blog", "/works", "/about", "/search"]) {
     await expect(page).toHaveTitle(/yadokani389/);
     await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
     await page.evaluate(() => globalThis.document.fonts.ready);
+    const emptyIcons = await page
+      .locator("svg[data-icon]")
+      .evaluateAll((icons) =>
+        icons
+          .filter(
+            (icon) =>
+              icon.getBoundingClientRect().width > 0 &&
+              (icon as globalThis.SVGSVGElement).getBBox().width === 0,
+          )
+          .map((icon) => icon.getAttribute("data-icon")),
+      );
+    expect(emptyIcons).toEqual([]);
     expect(
       await page.evaluate(
         () =>
@@ -35,9 +47,20 @@ test("search finds Japanese text, filters content, and restores URL state", asyn
   await page.goto("/search?q=ホームページ&type=blog");
   const input = page.getByRole("searchbox");
   await expect(input).toHaveValue("ホームページ");
+  await expect(
+    page.locator('.search-icon [data-icon="lucide:search"]'),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("button", { name: "検索語をクリア" })
+      .locator('[data-icon="lucide:x"]'),
+  ).toBeVisible();
   const results = page.locator(".results-list");
   await expect(
     results.getByRole("link", { name: /ホームページ作りました/ }),
+  ).toBeVisible();
+  await expect(
+    results.locator('[data-icon="lucide:arrow-up-right"]').first(),
   ).toBeVisible();
   await input.fill("rust");
   await page.getByRole("button", { name: /^Works/ }).click();
@@ -61,6 +84,9 @@ test("search finds Japanese text, filters content, and restores URL state", asyn
     page.getByRole("heading", { name: "最近の公開内容" }),
   ).toBeVisible();
   await expect(input).toBeFocused();
+  await expect(
+    page.locator('.result-arrow [data-icon="lucide:arrow-right"]').first(),
+  ).toBeVisible();
 });
 
 for (const kind of ["blog", "works"]) {

@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import type { SearchSeedEntry } from "../lib/search/model";
 import SearchExperience from "../components/search/SearchExperience.svelte";
 import Layout from "../layouts/Layout.astro";
@@ -68,6 +69,34 @@ const searchStats = {
       </dl>
     </section>
 
-    <SearchExperience client:load {recentEntries} {searchStats} />
+    <SearchExperience client:load {recentEntries} {searchStats}>
+      <Icon
+        name="lucide:search"
+        class="h-full w-full"
+        aria-hidden="true"
+        is:inline
+      />
+      <Icon
+        slot="clear-icon"
+        name="lucide:x"
+        class="h-4 w-4"
+        aria-hidden="true"
+        is:inline
+      />
+      <Icon
+        slot="result-arrow"
+        name="lucide:arrow-right"
+        class="h-4 w-4"
+        aria-hidden="true"
+        is:inline
+      />
+      <Icon
+        slot="search-result-arrow"
+        name="lucide:arrow-up-right"
+        class="h-4 w-4"
+        aria-hidden="true"
+        is:inline
+      />
+    </SearchExperience>
   </div>
 </Layout>

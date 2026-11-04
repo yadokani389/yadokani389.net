@@ -234,19 +234,7 @@
 <div class="search-shell">
 	<div class="search-controls">
 		<label class="search-field" aria-label="記事を検索">
-			<svg
-				class="search-icon"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.8"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"
-			>
-				<circle cx="11" cy="11" r="7"></circle>
-				<path d="m20 20-3.5-3.5"></path>
-			</svg>
+			<span class="search-icon" aria-hidden="true"><slot /></span>
 			<input
 				bind:this={inputElement}
 				class="search-input"
@@ -263,7 +251,7 @@
 					on:click={resetQuery}
 					aria-label="検索語をクリア"
 				>
-					×
+					<slot name="clear-icon" />
 				</button>
 			{/if}
 		</label>
@@ -328,7 +316,9 @@
 									<h3>{entry.title}</h3>
 									<p>{entry.description}</p>
 								</div>
-								<span class="result-arrow" aria-hidden="true">→</span>
+								<span class="result-arrow" aria-hidden="true"
+									><slot name="result-arrow" /></span
+								>
 							</div>
 						</a>
 					</li>
@@ -373,7 +363,9 @@
 										</p>
 									{/if}
 								</div>
-								<span class="result-arrow" aria-hidden="true">↗</span>
+								<span class="result-arrow" aria-hidden="true"
+									><slot name="search-result-arrow" /></span
+								>
 							</div>
 						</a>
 					</li>
@@ -452,6 +444,9 @@
 	}
 
 	.clear-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		border: 0;
 		background: transparent;
 		min-height: 2.75rem;

@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import type { CollectionEntry } from "astro:content";
 import type { GetStaticPathsOptions, Page } from "astro";
 import EntryCard from "../../../../components/EntryCard.astro";
@@ -41,7 +42,8 @@ const { page, tagName, totalPosts } = Astro.props as Props;
       class="inline-flex w-fit items-center gap-2 text-sm font-semibold text-ink-600 hover:text-sage-600"
       href="/blog"
     >
-      ← Blogに戻る
+      <Icon name="lucide:arrow-left" class="h-4 w-4" aria-hidden="true" />{" "}
+      Blogに戻る
     </a>
 
     <header class="space-y-3">

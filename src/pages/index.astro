@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
 import { SITE_TITLE } from "../consts";
 import Layout from "../layouts/Layout.astro";
@@ -24,10 +25,16 @@ const works = (await getCollection("works"))
         </p>
         <div class="mt-6 flex flex-wrap gap-x-8 gap-y-3">
           <a class="text-link" href="/blog">
-            Blogを見る <span aria-hidden="true">→</span>
+            Blogを見る{" "}
+            <span aria-hidden="true">
+              <Icon name="lucide:arrow-right" class="h-4 w-4" />
+            </span>
           </a>
           <a class="text-link" href="/works">
-            Worksを見る <span aria-hidden="true">→</span>
+            Worksを見る{" "}
+            <span aria-hidden="true">
+              <Icon name="lucide:arrow-right" class="h-4 w-4" />
+            </span>
           </a>
         </div>
       </div>
@@ -47,7 +54,10 @@ const works = (await getCollection("works"))
           <h2 class="mt-1 text-3xl">Blog</h2>
         </div>
         <a class="text-link" href="/blog">
-          一覧へ <span aria-hidden="true">→</span>
+          一覧へ{" "}
+          <span aria-hidden="true">
+            <Icon name="lucide:arrow-right" class="h-4 w-4" />
+          </span>
         </a>
       </div>
       <div>
@@ -68,7 +78,7 @@ const works = (await getCollection("works"))
               </p>
             </div>
             <span class="home-arrow" aria-hidden="true">
-              →
+              <Icon name="lucide:arrow-right" class="h-4 w-4" />
             </span>
           </a>
         ))}
@@ -82,7 +92,10 @@ const works = (await getCollection("works"))
           <h2 class="mt-1 text-3xl">Works</h2>
         </div>
         <a class="text-link" href="/works">
-          一覧へ <span aria-hidden="true">→</span>
+          一覧へ{" "}
+          <span aria-hidden="true">
+            <Icon name="lucide:arrow-right" class="h-4 w-4" />
+          </span>
         </a>
       </div>
       <div class="grid gap-x-8 gap-y-6 md:grid-cols-3">

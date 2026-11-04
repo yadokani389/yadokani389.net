@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import TagList from "../TagList.svelte";
 import Budoux from "../Budoux.astro";
 import Layout from "../../layouts/Layout.astro";
@@ -60,6 +61,7 @@ const pagefindDateValue = date.getTime().toString();
       class="inline-flex items-center gap-2 text-sm font-semibold text-ink-600 hover:text-sage-600"
       href={backHref}
     >
+      <Icon name="lucide:arrow-left" class="h-4 w-4" aria-hidden="true" />
       {backLabel}
     </a>
     <header class="space-y-3">

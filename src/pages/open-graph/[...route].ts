@@ -6,6 +6,7 @@ import {
   titleColor,
 } from "../../lib/og/constants";
 import { buildOgPages } from "../../lib/og/pages";
+import { formatOgText } from "../../lib/og/text";
 import { getTitleFontSize } from "../../lib/og/title";
 
 const pages = await buildOgPages();
@@ -16,8 +17,8 @@ export const { getStaticPaths, GET } = await OGImageRoute({
     const titleSize = getTitleFontSize(page.title);
 
     return {
-      title: page.title,
-      description: page.description,
+      title: formatOgText(page.title),
+      description: formatOgText(page.description),
       fonts: ogFonts,
       font: {
         title: {

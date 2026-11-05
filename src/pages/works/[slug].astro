@@ -12,10 +12,11 @@ const work = await getEntry("works", slug);
 if (!work) {
   throw new Error(`Work not found: ${slug}`);
 }
-const { Content } = await render(work);
+const { Content, headings } = await render(work);
 ---
 
 <ArticleDetailShell
+  {headings}
   title={work.data.title}
   description={work.data.description}
   date={work.data.date}

@@ -12,10 +12,11 @@ const post = await getEntry("blog", slug);
 if (!post) {
   throw new Error(`Post not found: ${slug}`);
 }
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 ---
 
 <ArticleDetailShell
+  {headings}
   title={post.data.title}
   description={post.data.description}
   date={post.data.date}

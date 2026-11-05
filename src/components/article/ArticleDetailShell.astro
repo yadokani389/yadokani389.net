@@ -1,4 +1,6 @@
 ---
+import type { MarkdownHeading } from "astro";
+import ArticleTableOfContents from "./ArticleTableOfContents.astro";
 import { Icon } from "astro-icon/components";
 import TagList from "../TagList.svelte";
 import Budoux from "../Budoux.astro";
@@ -7,6 +9,7 @@ import Layout from "../../layouts/Layout.astro";
 import { formatDate } from "../../utils/formatDate";
 
 interface Props {
+  headings: MarkdownHeading[];
   title: string;
   description: string;
   date: Date;
@@ -20,6 +23,7 @@ interface Props {
 }
 
 const {
+  headings,
   title,
   description,
   date,
@@ -94,10 +98,20 @@ const pagefindDateValue = date.getTime().toString();
       {tags.length > 0 && <TagList tags={tags} basePath={tagBasePath} />}
     </header>
 
-    <div class="prose max-w-none">
-      <slot />
+    <div class="relative">
+      <ArticleTableOfContents {headings} />
+      <div class="prose max-w-none" data-article-body>
+        <slot />
+      </div>
     </div>
     <ShareActions title={title} />
     <ShareActions title={title} placement="side" />
   </div>
 </Layout>
+
+<style is:global>
+  [data-article-body] h2[id],
+  [data-article-body] h3[id] {
+    scroll-margin-block-start: 7rem;
+  }
+</style>

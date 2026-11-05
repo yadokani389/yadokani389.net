@@ -1,0 +1,235 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const headings = Astro.props.headings.filter(
+  ({ depth }) => depth === 2 || depth === 3,
+);
+---
+
+{headings.length > 0 && (
+  <aside class="article-toc" data-article-toc data-pagefind-ignore>
+    <details open>
+      <summary>目次</summary>
+      <nav aria-label="目次">
+        <ol>
+          {headings.map(({ depth, slug, text }) => (
+            <li class:list={{ "toc-subheading": depth === 3 }}>
+              <a href={`#${slug}`}>{text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </details>
+  </aside>
+)}
+
+<script>
+  const root =
+    globalThis.document.querySelector<globalThis.HTMLElement>(
+      "[data-article-toc]",
+    );
+  const details = root?.querySelector("details");
+  const nav = root?.querySelector("nav");
+  if (root && details && nav) {
+    const entries = Array.from(
+      root.querySelectorAll<globalThis.HTMLAnchorElement>("a"),
+    ).flatMap((link) => {
+      const heading = globalThis.document.getElementById(
+        decodeURIComponent(link.hash.slice(1)),
+      );
+      return heading ? [{ link, heading }] : [];
+    });
+    const desktop = globalThis.matchMedia("(min-width: 88rem)");
+    const enlargedDesktop = globalThis.matchMedia("(min-width: 97rem)");
+    let wideLayout: boolean | undefined;
+    const updateLayout = () => {
+      const wide =
+        desktop.matches &&
+        (globalThis.document.documentElement.dataset.fontSize !== "large" ||
+          enlargedDesktop.matches);
+      if (wide !== wideLayout) {
+        details.open = wide;
+        wideLayout = wide;
+      }
+    };
+    let frame = 0;
+    const updateActive = () => {
+      frame = 0;
+      const readingLine =
+        Number.parseFloat(
+          globalThis.getComputedStyle(globalThis.document.documentElement)
+            .fontSize,
+        ) * 7;
+      let active = entries.at(0);
+      for (const entry of entries) {
+        if (entry.heading.getBoundingClientRect().top <= readingLine + 1) {
+          active = entry;
+        }
+      }
+      if (
+        globalThis.scrollY > 0 &&
+        Math.ceil(globalThis.scrollY + globalThis.innerHeight) >=
+          globalThis.document.documentElement.scrollHeight - 1
+      ) {
+        active = entries.at(-1);
+      }
+      for (const entry of entries) {
+        if (entry === active) {
+          entry.link.setAttribute("aria-current", "location");
+        } else {
+          entry.link.removeAttribute("aria-current");
+        }
+      }
+      if (active && details.open) {
+        const bounds = active.link.getBoundingClientRect();
+        const viewport = nav.getBoundingClientRect();
+        if (bounds.top < viewport.top) {
+          nav.scrollTop += bounds.top - viewport.top;
+        } else if (bounds.bottom > viewport.bottom) {
+          nav.scrollTop += bounds.bottom - viewport.bottom;
+        }
+      }
+    };
+    const scheduleUpdate = () => {
+      if (!frame) frame = globalThis.requestAnimationFrame(updateActive);
+    };
+    for (const { link, heading } of entries) {
+      link.addEventListener("click", (event) => {
+        if (
+          event.defaultPrevented ||
+          event.button !== 0 ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey
+        ) {
+          return;
+        }
+        event.preventDefault();
+        globalThis.history.replaceState(
+          globalThis.history.state,
+          "",
+          link.href,
+        );
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+        heading.scrollIntoView();
+        scheduleUpdate();
+      });
+    }
+    const update = () => {
+      updateLayout();
+      scheduleUpdate();
+    };
+    details.addEventListener("toggle", scheduleUpdate);
+    globalThis.addEventListener("scroll", scheduleUpdate, { passive: true });
+    globalThis.addEventListener("resize", update);
+    globalThis.addEventListener("hashchange", scheduleUpdate);
+    globalThis.addEventListener("load", scheduleUpdate);
+    new globalThis.ResizeObserver(scheduleUpdate).observe(
+      globalThis.document.body,
+    );
+    new globalThis.MutationObserver(update).observe(
+      globalThis.document.documentElement,
+      { attributes: true, attributeFilter: ["data-font-size"] },
+    );
+    void globalThis.document.fonts.ready.then(scheduleUpdate);
+    update();
+  }
+</script>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .article-toc {
+    @apply mb-6 border-y border-sand-200 py-3 text-sm text-ink-600;
+  }
+
+  summary {
+    @apply cursor-pointer py-1 font-semibold text-ink-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage-500;
+  }
+
+  nav {
+    max-block-size: min(60vh, 28rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  ol {
+    @apply m-0 list-none p-0 pt-2;
+  }
+
+  a {
+    @apply block border-l-2 border-transparent py-2 pl-3 pr-1 leading-relaxed text-ink-600 hover:text-sage-600 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-sage-500;
+    overflow-wrap: anywhere;
+  }
+
+  a[aria-current="location"] {
+    @apply border-sage-600 font-semibold text-sage-600;
+  }
+
+  .toc-subheading a {
+    padding-inline-start: 1.5rem;
+  }
+
+  @media (width >= 88rem) {
+    .article-toc {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: calc(100% + 2rem);
+      inline-size: 13rem;
+      margin: 0;
+      border: 0;
+      padding: 0;
+    }
+
+    details {
+      position: sticky;
+      inset-block-start: 7rem;
+    }
+
+    summary {
+      display: none;
+    }
+
+    nav {
+      max-block-size: calc(100dvh - 9rem);
+    }
+
+    ol {
+      padding-block-start: 0;
+    }
+  }
+</style>
+
+<style is:global>
+  @reference "../../styles/global.css";
+
+  @media (width >= 88rem) and (width < 97rem) {
+    html[data-font-size="large"] [data-article-toc] {
+      position: static;
+      inline-size: auto;
+      @apply mb-6 border-y border-sand-200 py-3;
+    }
+
+    html[data-font-size="large"] [data-article-toc] details {
+      position: static;
+    }
+
+    html[data-font-size="large"] [data-article-toc] summary {
+      display: list-item;
+    }
+
+    html[data-font-size="large"] [data-article-toc] nav {
+      max-block-size: min(60vh, 28rem);
+    }
+
+    html[data-font-size="large"] [data-article-toc] ol {
+      padding-block-start: 0.5rem;
+    }
+  }
+</style>

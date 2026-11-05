@@ -3,6 +3,29 @@ import { expect, test } from "@playwright/test";
 
 const articlePath = "/blog/20261103-bunkasai-taiyaq";
 
+for (const height of [844, 480]) {
+  test(`mobile contents allow page scrolling at their boundary at ${height}px height`, async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== "mobile");
+    await page.setViewportSize({ width: 390, height });
+    await page.goto(articlePath);
+    await page.evaluate(() => globalThis.document.fonts.ready);
+    const toc = page.locator("[data-article-toc]");
+    await toc.locator("summary").click();
+    const nav = toc.getByRole("navigation", { name: "目次" });
+    await nav.hover();
+    await nav.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    const scrollY = await page.evaluate(() => globalThis.scrollY);
+    await page.mouse.wheel(0, 200);
+    await expect
+      .poll(() => page.evaluate(() => globalThis.scrollY))
+      .toBeGreaterThan(scrollY);
+  });
+}
+
 test("contents navigation replaces history and Back returns to the previous page", async ({
   page,
 }, testInfo) => {

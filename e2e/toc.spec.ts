@@ -285,7 +285,7 @@ for (const path of ["/blog/20260224-diary", "/works/20260129-taiyaq"]) {
 test("articles without section headings omit the contents", async ({
   page,
 }) => {
-  await page.goto("/blog/20260118-homepage");
+  await page.goto("/works/20260118-online-breakout");
   await expect(page.locator("[data-article-toc]")).toHaveCount(0);
 });
 

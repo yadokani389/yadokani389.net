@@ -1,0 +1,332 @@
+---
+title: "Rustでサーバーいらずのオンラインゲームを作ろう"
+date: 2025-05-29
+lastmod: 2026-11-21
+description: "Bevyのオンライン対戦型ブロック崩しで、MatchboxとIrohを使いシグナリングサーバーを省いた方法を紹介します。"
+tags: ["rust", "bevy", "game"]
+---
+
+[https://zenn.dev/yadokani389/articles/matchbox-iroh-20250529](https://zenn.dev/yadokani389/articles/matchbox-iroh-20250529)のミラーです。
+
+## はじめに
+
+今回はP2P通信を使い、サーバー不要の対戦型ブロック崩しを作りました。この記事では、その仕組みと実装を紹介します。
+
+![ゲームプレイGIF](https://storage.googleapis.com/zenn-user-upload/e28f390e79c5-20250526.gif)
+
+https://github.com/yadokani389/online-breakout
+
+<details>
+<summary>記事を書いた時点でのソースです。</summary>
+
+https://github.com/yadokani389/online-breakout/tree/0cb742a9d69715fd07ecacde792c3e038c516769
+
+</details>
+
+## 概要
+
+Bevyで制作したゲームです。ホストの画面に表示されたIDを相手に送り、相手がそのIDを入力すると対戦が始まります。
+
+シグナリングサーバーは不要です。GitHub Pagesにデプロイし、ピア間で通信すれば、完全無料でサービスを提供できます。
+
+https://yadokani389.github.io/online-breakout/
+
+## 技術スタック
+
+それぞれ軽く説明します。
+
+### Bevy
+
+https://bevyengine.org/
+Rust製のゲームエンジンです。
+特徴はECSシステムと、ソースコードだけで開発できる点です。
+個人的にマウスやGUIアプリをあまり好まないため、ソースコードだけで開発できる点を気に入っています。
+Bevy自体にはオンラインゲーム用の機能がありません。
+
+### GGRS
+
+https://github.com/gschup/ggrs
+GGPOのRust実装(reimagination)です。
+P2P通信を用いたロールバックを実現するための機能が提供されています。
+
+### Matchbox
+
+https://github.com/johanhelsing/matchbox
+WebRTCを用いたpeer-to-peer通信のためのライブラリです。
+WebRTCはピア間の直接通信を可能にしますが、それらの接続を確立するためにはシグナリングサーバーが必要です。
+
+### Iroh
+
+https://github.com/n0-computer/iroh
+パブリックキーによる接続が可能なP2P通信ライブラリです。
+QUICプロトコルを基盤とし、直接接続を可能な限り確立し、必要に応じてリレーサーバーを利用する設計となっています。
+
+---
+
+GGRSとBevyだけで実現できるのでしょうか。
+GGRSにはUDPサポートが組み込まれていますが、ブラウザでは動作しません。
+ブラウザで動かせば、ゲームを試すハードルが下がります。
+そこでMatchboxを使い、WebRTCで2つのブラウザ間にUDPのような接続を実現します。
+今回はシグナリングサーバーを使わず、Irohでピア同士のハンドシェイクを行います。
+
+## 実装
+
+Bevy、GGRS、MatchboxについてはMatchboxの作者のjohanhelsingさんがとても分かりやすい記事を書いているので参考にしてください。
+https://johanhelsing.studio/posts/extreme-bevy
+
+この記事ではブロック崩しの詳細を省き、元記事にないIrohとの統合や、ほかのゲーム開発にも役立つtipsを紹介します。
+
+### signaller
+
+`matchbox_socket`の[`Signaller`](https://docs.rs/matchbox_socket/latest/matchbox_socket/trait.Signaller.html)を実装すると自分でシグナリングを制御できます。
+ですが、シグナリングサーバーなんて何をしているかわからないですよね。
+なんとIrohを使用したSignallerのexampleがあります！(神)
+https://github.com/johanhelsing/matchbox/tree/29643f4ede8343f41ee4e3154b432be97b2ac0c5/examples/custom_signaller
+
+このexampleをBevyで実装する必要があります。
+ここで問題となるのはasyncな関数が含まれていることです。
+
+#### 案1
+
+Bevy標準のTaskを使う。
+参考: https://github.com/bevyengine/bevy/blob/25bfa80e60e886031dd6eb1a3fe2ea548fc0a6c6/examples/async_tasks/async_compute.rs
+
+`direct_message.rs`と`iroh_gossip_signaller.rs`は先程のexampleからコピーしておきます。
+少々変更しましたが、ほとんどそのままです。
+タスク内で`IrohGossipSignallerBuilder::new().await`を呼び出すと、次のエラーが発生しました。
+
+```rust
+#[derive(Component)]
+pub struct IrohTask(Task<IrohGossipSignallerBuilder>);
+
+fn spawn_signaller_task(mut commands: Commands) {
+    let thread_pool = AsyncComputeTaskPool::get();
+    let task = thread_pool.spawn(async move { IrohGossipSignallerBuilder::new().await.unwrap() });
+    commands.spawn(IrohTask(task));
+}
+
+fn handle_signaller_task(mut commands: Commands, mut task_query: Query<(Entity, &mut IrohTask)>, args: Res<Args>) {
+    for (entity, mut task) in task_query.iter_mut() {
+        if let Some(signaller) = block_on(future::poll_once(&mut task.0)) {
+            info!("Iroh signaller ready");
+            let socket: MatchboxSocket = WebRtcSocketBuilder::new(args.iroh)
+                .signaller_builder(Arc::new(signaller))
+                .add_unreliable_channel()
+                .into();
+            commands.insert_resource(socket);
+            commands.entity(entity).despawn();
+        }
+    }
+}
+```
+
+```
+thread 'Async Compute Task Pool (2)' panicked at /home/USER/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/iroh-0.35.0/src/discovery/pkarr.rs:161:27:
+there is no reactor running, must be called from the context of a Tokio 1.x runtime
+```
+
+実装を見ていないのでなんとも言えませんが、BevyのTaskはTokio runtimeではないようですね。
+
+#### 案2
+
+Bevy tokioなどで調べてみたら、いい感じのプラグインを見つけました。
+https://github.com/EkardNT/bevy-tokio-tasks
+
+```rust
+fn start_matchbox_socket(runtime: ResMut<TokioTasksRuntime>, args: Res<Args>) {
+    let iroh_address = args.iroh.clone();
+    runtime.spawn_background_task(|mut ctx| async move {
+        let signaller_builder = IrohGossipSignallerBuilder::new().await.unwrap();
+        let socket: MatchboxSocket = WebRtcSocketBuilder::new(iroh_address)
+            .signaller_builder(Arc::new(signaller_builder))
+            .add_unreliable_channel()
+            .into();
+        info!("Starting matchbox socket");
+        ctx.run_on_main_thread(move |ctx| {
+            ctx.world.insert_resource(socket);
+        })
+        .await;
+    });
+}
+```
+
+```
+2025-05-23T13:31:01.288397Z  INFO online_breakout::game::online::iroh_gossip_signaller: Creating new IrohGossipSignallerBuilder
+2025-05-23T13:31:01.291484Z  INFO online_breakout::game::online::iroh_gossip_signaller: Iroh ID: 4819cd21a373fc38a0462cb4f9b915dedb25c50a062aabc27b2528329c674baa
+2025-05-23T13:31:01.291520Z  INFO online_breakout::game::online::iroh_gossip_signaller: Matchbox ID: e8a3b5a3-35f6-475a-b014-c1d5f2e82c16
+2025-05-23T13:31:01.694837Z  INFO ep{me=4819cd21a3}:magicsock:actor: iroh::magicsock: home is now relay https://aps1-1.relay.iroh.network./, was None
+2025-05-23T13:31:01.695189Z  INFO online_breakout::game::online: Starting matchbox socket
+2025-05-23T13:31:01.695372Z  INFO online_breakout::game::online::iroh_gossip_signaller: Creating new signaller
+2025-05-23T13:31:01.695401Z  INFO online_breakout::game::online::iroh_gossip_signaller: Subscribing to gossip topic TopicId(5f5f6f6e6c696e655f627265616b6f75745f69726f685f67
+6f737369705f5f5f) with bootstrap: []
+
+thread 'IO Task Pool (2)' panicked at /home/USER/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/iroh-gossip-0.35.0/src/net.rs:351:20:
+there is no reactor running, must be called from the context of a Tokio 1.x runtime
+```
+
+Tokio runtimeで`IrohGossipSignallerBuilder`を生成できましたが、エラーはまだ解消しません。
+
+https://github.com/johanhelsing/matchbox/blob/b5d8be77ff7f80db18b4c5532e28f6d9d6ad34da/bevy_matchbox/src/socket.rs#L86-L98
+
+該当箇所ではBevyのTaskを使用しています。この処理でエラーが起きているようです。
+そのため、`MatchboxSocket`を使わず、`message_loop_fut`をクロージャ内で実行します。
+
+```rust diff
++ #[derive(Resource, Deref, DerefMut)]
++ pub struct IrohSocket(WebRtcSocket);
+
+ fn start_matchbox_socket(runtime: ResMut<TokioTasksRuntime>, args: Res<Args>) {
+    let iroh_address = args.iroh.clone();
+     runtime.spawn_background_task(|mut ctx| async move {
+         let signaller_builder = IrohGossipSignallerBuilder::new().await.unwrap();
+-        let socket: MatchboxSocket = WebRtcSocketBuilder::new(iroh_address)
++        let (socket, message_loop_fut) = WebRtcSocketBuilder::new(iroh_address)
+             .signaller_builder(Arc::new(signaller_builder))
+             .add_unreliable_channel()
+-            .into();
++            .build();
+         info!("Starting matchbox socket");
+         ctx.run_on_main_thread(move |ctx| {
+-            ctx.world.insert_resource(socket);
++            ctx.world.insert_resource(IrohSocket(socket));
+         })
+         .await;
++        _ = message_loop_fut.await;
+     });
+ }
+```
+
+動きましたー！しかし、まだ終わりではありません。
+
+現時点ではwasmがサポートされていないのです。
+https://github.com/EkardNT/bevy-tokio-tasks/issues/18
+
+#### 案3
+
+https://github.com/tekacs/bevy-wasm-tasks
+
+wasm対応版のbevy-tokio-tasksです。
+基にはしていますがAPIがかなり変更されています。
+
+最終的なソースは以下のようになりました。
+
+```rust
+fn start_matchbox_socket(tasks: Tasks, args: Res<Args>) {
+    let iroh_address = args.iroh.clone();
+    tasks.spawn_auto(async move |x| {
+        let signaller_builder = IrohGossipSignallerBuilder::new().await.unwrap();
+        let builder = WebRtcSocketBuilder::new(iroh_address)
+            .signaller_builder(Arc::new(signaller_builder))
+            .add_unreliable_channel();
+        info!("Starting matchbox socket");
+        let (socket, message_loop_fut) = builder.build();
+        x.submit_on_main_thread(move |ctx| {
+            ctx.world.insert_resource(IrohSocket(socket));
+        });
+        _ = message_loop_fut.await;
+    });
+}
+```
+
+Bevy 0.16への対応に加え、`spawn_auto`の実装にも問題があると考え、自分のフォークを使用しています。
+
+<details>
+<summary>変更内容。</summary>
+
+https://github.com/tekacs/bevy-wasm-tasks/blob/37eba561f78c1444bda226c9dfe02e598cc4deb8/src/lib.rs#L104-L120
+
+元の`spawn_auto`はfeatureに応じて`spawn_tokio`か`spawn_wasm`を呼び出します。しかし、wasmでもTaskにSendトレイトを要求するため、動作しませんでした。そこで、featureごとに関数を分けました。
+
+https://github.com/yadokani389/bevy-wasm-tasks/blob/ef22cf578d89180a9ff90f5e3de52b09f8115e2d/src/lib.rs#L104-L139
+
+</details>
+
+### メニュー
+
+`Res<Args>`はclapから取得したコマンドライン引数を管理する構造体です。`synctest`モードで起動するかどうかと、Irohの`public id`を持っています。
+リソースとして登録してメニューで変更しながら使っています。
+
+```rust
+#[derive(Parser, Resource, Debug, Clone)]
+pub struct Args {
+    #[clap(short, long)]
+    pub synctest: bool,
+    #[clap(short, long, default_value = "")]
+    pub iroh: String,
+}
+
+fn get_args() -> args::Args {
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        args::Args::parse()
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    {
+        let mut args = args::Args::parse();
+        // Get window.location object
+        let window = web_sys::window().expect("no global `window` exists");
+        let location = window.location();
+
+        // Get the hash part of the URL (including the # symbol)
+        if let Ok(hash) = location.hash() {
+            args.iroh = hash.trim_start_matches('#').to_string();
+        }
+
+        args
+    }
+}
+```
+
+wasmの時はurlから`public id`を取得しています。
+
+これだけでも一応遊べるのですが、現状`public id`はログからしか取得できず、更に毎回コマンド引数を変えたりurlを変えたりするのは面倒です。
+なのでゲーム内で`public id`を表示し、入力できるロビーメニューを作っていきます。
+
+ロビーメニューには、次の要件があります。
+
+- `public id`を表示し、コピーできる。
+- ペーストでIDを入力できる。
+
+BevyではUI機能が弱いという課題があります。
+まず文字の表示はできますが選択ができず当然コピーもできません。
+入力も[bevy-text-edit](https://github.com/dothanhtrung/bevy-text-edit)というプラグインはあるのですが、ペーストに対応していません。
+なので今回は[bevy_egui](https://github.com/vladbat00/bevy_egui)を使います。
+bevy_eguiは[Egui](https://github.com/emilk/egui) integrationを提供するプラグインです。
+
+このプラグインを使いEguiから文字を表示すれば、選択してコピーできます。
+Eguiはペーストにも対応しているので、入力もできます。
+
+ホストになるかクライアントになるかのボタンはBevyで作り、真ん中の入力ボックスはEguiで作りました。
+![ロビーメニュー画像](https://storage.googleapis.com/zenn-user-upload/d92e8bf3b827-20250526.png)
+
+```rust
+fn show_textbox(mut context: EguiContexts, mut args: ResMut<Args>) {
+    egui::Area::new(egui::Id::new(0))
+        .anchor(egui::Align2::CENTER_CENTER, egui::Vec2::ZERO)
+        .show(context.ctx_mut(), |ui| {
+            ui.label("Enter Room ID:");
+            ui.add(
+                egui::TextEdit::singleline(&mut args.iroh)
+                    .hint_text("x".repeat(64))
+                    .font(egui::FontId::proportional(30.))
+                    .desired_width(400.),
+            );
+        });
+}
+```
+
+`singleline`の引数にリソースを渡し、そのまま書き換えられるようにしています。
+
+ボタンを押すとホストの場合は選択可能な`public id`が表示され、クライアントの場合はconnecting...のみ表示されます。
+
+> issueを見る限りもうサポートされているはずなのですが、モバイル端末で文字入力しようとした際に仮想キーボードが立ち上がらない問題があります。
+> 一応urlの後ろに`#`とIDを追加することで最初から入力された状態にすることができ、ボタンを押すだけで参加はできます。
+> しかし、ホストになったときはIDをコピーすることもできないので両方モバイル端末の際は遊ぶことが非常に困難になっています。
+
+## おわり
+
+Bevy製オンラインブロック崩しの開発で遭遇した問題と、その解決策を紹介しました。
+実際のコードはGitHubを覗いてみてください。より良い書き方があれば、ぜひ教えていただきたいです！
+
+Bevyでのゲーム開発はとても楽しいです。初学者でもライフタイムをほとんど気にせず、ECSに慣れれば所有権もそこまで気にならないでしょう。見た目どおりに動く楽しさがあり、モチベーションも保ちやすいと感じます。ぜひ触ってみてください！

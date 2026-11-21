@@ -1,0 +1,147 @@
+---
+title: "動く壁紙を作ろう"
+date: 2025-12-11
+lastmod: 2026-11-21
+description: "Bevy製ライブ壁紙プラグインの使い方と各OSの描画方法を解説します。"
+tags: ["rust", "bevy", "linux", "windows"]
+---
+
+[https://zenn.dev/yadokani389/articles/bevy_live_wallpaper-20251211](https://zenn.dev/yadokani389/articles/bevy_live_wallpaper-20251211)のミラーです。
+
+## はじめに
+
+今回は、Rust製のゲームエンジン[Bevy](https://bevyengine.org/)でライブ壁紙を簡単に作成できるプラグイン、`bevy_live_wallpaper`を開発したので、その紹介と解説をします。
+
+![demo gif](https://raw.githubusercontent.com/yadokani389/bevy_live_wallpaper/main/media/demo.gif)
+
+![flow-clock demo gif](https://raw.githubusercontent.com/yadokani389/flow-clock/main/media/demo.gif)
+
+リポジトリはこちらです。
+
+https://github.com/yadokani389/bevy_live_wallpaper
+
+このプラグインを使うと、Windows, Linux(Wayland/X11)のデスクトップ背景にBevyのシーンを直接描画できます。
+この記事では、その使い方や仕組み、開発で工夫した点について詳しく解説していきます。
+
+## 特徴
+
+- **クロスプラットフォーム対応**: Windows、Wayland、X11で動作する。
+- **Bevyとの簡単な統合**: Bevyアプリに数行追加するだけで導入できる。
+- **インタラクティビティ**: マウスなどの入力に応じて画面を動的に変更できる。
+
+## 使い方
+
+### 1. 依存関係の追加
+
+`Cargo.toml`にお使いのプラットフォームに合わせた設定を追加します。
+
+```sh
+# Windows
+cargo add bevy_live_wallpaper
+
+# Linux
+cargo add bevy_live_wallpaper -F=wayland,x11
+```
+
+### 2. プラグインのセットアップ
+
+`main.rs`でプラグインをセットアップします。プラットフォームごとにウィンドウの設定を少し変更する必要があります。
+
+```rust:src/main.rs
+use bevy::prelude::*;
+use bevy_live_wallpaper::{LiveWallpaperCamera, LiveWallpaperPlugin};
+
+fn main() {
+    let mut app = App::new();
+
+    // プラットフォームごとにウィンドウ設定を調整
+    let mut window_plugin = WindowPlugin::default();
+
+    // Wayland/X11ではプライマリウィンドウを無効化
+    #[cfg(any(feature = "wayland", feature = "x11"))]
+    {
+        window_plugin.primary_window = None;
+        window_plugin.exit_condition = bevy::window::ExitCondition::DontExit;
+    }
+
+    // Windowsではボーダーレスウィンドウにする
+    #[cfg(target_os = "windows")]
+    {
+        window_plugin.primary_window = Some(Window {
+            decorations: false,
+            ..default()
+        });
+    }
+
+    app.add_plugins(DefaultPlugins.set(window_plugin));
+
+    // プラグインを追加
+    app.add_plugins(LiveWallpaperPlugin::default());
+
+    app.add_systems(Startup, setup_scene).run();
+}
+
+fn setup_scene(mut commands: Commands) {
+    // 壁紙として表示したいカメラに`LiveWallpaperCamera`コンポーネントを追加
+    commands.spawn((Camera2d, LiveWallpaperCamera));
+
+    commands.spawn((
+        Sprite::from_color(Color::srgb(0.15, 0.4, 0.85), Vec2::splat(1600.0)),
+        Transform::from_xyz(0.0, 0.0, 0.0),
+    ));
+}
+```
+
+- **Wayland/X11**:
+  Bevyの標準ウィンドウは使わない。`primary_window = None`に設定すると、プラグインが専用のウィンドウ（サーフェス）を作成する。
+- **Windows**:
+  通常のウィンドウを作成し、プラグインが壁紙として使う。`decorations: false`を指定すると、ウィンドウの枠が消える。
+- カメラに`LiveWallpaperCamera`を付けると、その映像が壁紙として描画される。
+
+## アーキテクチャ・仕組み
+
+それぞれについて軽く説明します。
+
+### Windows
+
+Win32 APIを直接利用して、Bevyウィンドウをデスクトップの背景レイヤーに統合します。
+具体的には、`Progman`または`WorkerW`という特殊なウィンドウを探し出し、Bevyのウィンドウをその子ウィンドウとして設定します。
+この設定によって、デスクトップアイコンの背後へBevyのシーンを描画します。
+ウィンドウのスタイルを調整して、ボーダーやタイトルバーを非表示にする必要があります。
+
+### Wayland
+
+Waylandプロトコルを利用して、コンポジタと直接通信します。
+`wlr-layer-shell`拡張プロトコルを使い、Bevyのシーンを描画するためのサーフェス（ウィンドウに相当）をデスクトップの最下層レイヤー (`Layer::Bottom`) に配置します。これにより、壁紙として機能させます。
+Bevyが標準で作成するウィンドウは使わず、このプラグインが各モニターに対応した専用のWaylandサーフェスを管理します。
+レンダリングはオフスクリーンイメージに対して行われ、その結果が各サーフェスにコピーされます。
+
+### X11
+
+ルートウィンドウ（デスクトップの最背後にあるウィンドウ）の子として新しいウィンドウを作成します。
+このウィンドウを`StackMode::BELOW`に設定することで、他のすべてのウィンドウの背面に配置し、壁紙のように見せかけます。
+`RandR` (X Resize and Rotate) 拡張機能を使い、モニターの構成や解像度を取得します。
+レンダリングはWaylandと同様にオフスクリーンで行われ、その結果が作成したX11ウィンドウに描画されます。
+
+## 工夫した点
+
+- マウス対応
+  せっかくゲームエンジンを壁紙にするプラグインなので、マウスなどで操作したり、動きを変えたりできるとうれしいと考えた。
+  そのため、マウス位置とキー入力を取得できる。
+  どのプラットフォームでも壁紙のウィンドウを直接操作できないため、入力情報はOSごとに異なる方法で取得する。
+  Waylandでは、背景上にカーソルがないと位置を取得できないという制約がある。それ以外の環境を含め、統一されたAPIでマウス情報を扱える。
+
+- ウィンドウモード
+  デバッグ時にUIを操作できず、画面も表示されないと困るため（実際に困ったため）、通常のウィンドウとして起動するモードも用意した。
+  プラグインを切るだけではカーソル位置などの情報を受け取れなくなる。そのため、ウィンドウモードでも同じAPIで情報を取得できるようにした。
+
+## macOS対応について
+
+macOSにも対応できる可能性はありましたが、macOSを持っていなかったため開発できませんでした。
+開発に協力してくださる方がいれば、PRをお待ちしています。
+
+## まとめ
+
+Rustでライブ壁紙を作りたい方は、この機会にBevyを始めて、最高の壁紙を作りましょう！
+
+バグ報告や機能リクエストなど、GitHubでのフィードバックをお待ちしています。

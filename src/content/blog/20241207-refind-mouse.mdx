@@ -1,0 +1,136 @@
+---
+title: "ブートマネージャーでマウスを使う話(rEFInd)"
+date: 2024-12-07
+lastmod: 2026-11-21
+description: "rEFIndでブートメニューのマウス操作を有効にしてWindowsとLinuxを切り替えます。"
+tags: ["windows", "linux"]
+---
+
+[https://zenn.dev/yadokani389/articles/asakatsu2024-20241207](https://zenn.dev/yadokani389/articles/asakatsu2024-20241207)のミラーです。
+
+この記事は [朝活部 Advent Calendar 2024](https://adventar.org/calendars/10465) 7日目の記事です。
+記事書くの初めてなのと言っていることに自信もないのでマサカリをお願いします。
+
+## はじめに
+
+この間bluetoothキーボード(HHKB)を買いました。
+ですがなんとbluetoothの機能はOSが提供しているのでBIOSやブートマネージャーの画面ではキーボードが動かないのです。
+
+つまりHHKBを使っているとWindowsとLinuxを切り替えることができないのです。
+
+## 解決策1(grub only)
+
+私は今までブートマネージャーにはgrub2を使用していました。
+構成はNixOSを使用しているので上からNixOS、NixOS - All configurations(submenu)、Windowsでした。なので
+`grub2-reboot 2`
+のように実行すると次の起動時に0-indexで上から2個目のentryをデフォルトで選択してくれます。
+ですがこれだと毎回Linuxを起動しないといけなく流石に時間の無駄を感じます。
+
+## 解決策2（rEFInd）
+
+ブートマネージャー上でマウスを使える環境が必要でした。
+grubにはマウス操作機能がないようです。そこで別のブートマネージャーを探し、rEFIndを見つけました。
+[rEFInd](https://www.rodsbooks.com/refind/)はUEFIブートマネージャーで、rEFItのフォークらしいです。
+rEFIndでマウスが使えると知った経緯は、もう覚えていません。
+
+> この方法は、コンピューターの(U)EFIが必要な機能を提供していない場合には使えません。
+> BIOS画面でマウスを使える場合は、この条件を満たすはずです。
+
+### インストール
+
+パッケージマネージャーで`refind`をインストールした後、`refind-install`を実行します。手動でESPに実行可能ファイルをコピーする方法でもインストールできます。
+
+### 設定
+
+`esp/EFI/refind/refind.conf`を編集します。`refind-install`を実行すると、設定ファイルも自動生成されるようです。
+`enable_mouse`のコメントアウトを外すと、マウスを使えるようになります。
+既存エントリーの有無は覚えていません。私は次の設定を追記しました。環境に合わせて変更してください。
+
+```ini:refind.conf
+menuentry NixOS {
+  loader /efi/EFI/NixOS-boot-efi/grubx64.efi
+}
+
+menuentry Windows {
+  volume BAE31CF2-33A5-4D58-BF0F-7F5BA8EA3D65
+  loader \EFI\Microsoft\Boot\bootmgfw.efi
+}
+```
+
+コメントで親切に注釈が書かれていているので読みながら好きに設定してください。
+
+### 見た目をカスタマイズする
+
+この設定で動作するはずですが、デフォルトの見た目は好みではありません。
+
+![refind](https://www.rodsbooks.com/refind/refind.png)
+
+私は[refind-ambience](https://github.com/lukechilds/refind-ambience)というテーマを使っています。インストール方法はREADMEのとおりです。
+NixOS用のアイコンがなかったため、自作して公開します。
+
+![NixOS icon](https://storage.googleapis.com/zenn-user-upload/38917773b3c9-20241202.png)
+
+次の設定でアイコンを指定します。
+
+```diff:refind.conf
+menuentry NixOS {
++  icon /efi/refind/themes/refind-ambience/icons/os_nixos.png
+  loader /efi/EFI/NixOS-boot-efi/grubx64.efi
+}
+
+menuentry Windows {
++  icon /efi/refind/themes/refind-ambience/icons/os_win8.png
+  volume BAE31CF2-33A5-4D58-BF0F-7F5BA8EA3D65
+  loader \EFI\Microsoft\Boot\bootmgfw.efi
+}
+```
+
+見た目がおしゃれになりました。
+
+![](https://storage.googleapis.com/zenn-user-upload/e951518b6092-20241202.jpg)
+
+最後に、コメントアウト以外の設定をすべて掲載します。
+
+<details>
+<summary>refind.conf</summary>
+
+```ini:refind.conf
+include themes/refind-ambience/theme.conf
+
+timeout 5
+
+use_nvram false
+
+resolution max
+
+enable_mouse
+
+scanfor manual
+
+default_selection 1
+menuentry NixOS {
+  loader /efi/EFI/NixOS-boot-efi/grubx64.efi
+}
+
+menuentry Windows {
+  volume BAE31CF2-33A5-4D58-BF0F-7F5BA8EA3D65
+  loader \EFI\Microsoft\Boot\bootmgfw.efi
+}
+```
+
+</details>
+
+## まとめ
+
+rEFIndを使うと、ブートマネージャー上でマウスを操作できます。
+同じ問題で困っている人を見かけませんが、皆さんはどう対処しているのでしょうか。
+
+## おまけ
+
+Bluetoothキーボードをデュアルブートすると、OSを切り替えるたびに接続を切る必要があって不便ではないでしょうか。
+接続を維持する方法もあります。詳しくは次の記事を参照してください。
+https://mistymagich.wordpress.com/2021/09/07/windows-10-%E3%81%A8-xubuntu-20-04-%E3%81%AE%E3%83%87%E3%83%A5%E3%82%A2%E3%83%AB%E3%83%96%E3%83%BC%E3%83%88%E7%92%B0%E5%A2%83%E3%81%A7-happy-hacking-keyboard-professional-hybrid-type-s-%E3%82%92/
+この記事を参考に設定しました。HHKB以外のBluetoothキーボードでも使えます。
+
+Windowsの登録情報をエクスポートするとき、2デバイスで別々のエラーが発生しました。その対処を記録するつもりでしたが、詳細を忘れてしまいました。
+権限を広く与えると解決した記憶はありますが、正確な手順は分かりません。

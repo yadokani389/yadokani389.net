@@ -1,0 +1,169 @@
+---
+title: "TauriでもRustで爆速描画したい"
+date: 2025-03-05
+lastmod: 2026-11-21
+description: "TauriアプリでWebViewの背面にRustから描画する方法を紹介します。"
+tags: ["tauri", "tauri2", "rust", "tao"]
+---
+
+[https://zenn.dev/yadokani389/articles/rendering-with-rust-in-tauri-20250305](https://zenn.dev/yadokani389/articles/rendering-with-rust-in-tauri-20250305)のミラーです。
+
+## はじめに
+
+皆さんこの記事は読みましたでしょうか？
+https://zenn.dev/1step621/articles/8daee458b5140b
+この記事を書いたのは僕の友達で、レンダリングについて色々調べていたら知見が溜まってきたので記事にしました。
+
+### 課題点
+
+課題は次のとおりです。
+
+- Rustで画像を処理しても、フロントエンドへの転送に時間がかかる。
+- wasmはnative Rustより遅い（ロマンが足りない）。
+- Linuxでは現状、SharedArrayBufferを有効化できないため、wasmを並列化できない。
+
+そこで、Rustから直接描画する方法を試します。
+
+<details>
+<summary>他のライブラリを使えばよいのでは？</summary>
+
+彼はRustでUIを作りたくないらしいです。
+それにTauriは本当に使い心地がいいですしできることが多いのはいいことです。
+
+</details>
+
+## 実際できるのか
+
+**できます**
+青いやつはRustから描画しています。
+Linux
+![linux_demo](https://storage.googleapis.com/zenn-user-upload/d57792acb21c-20250305.png)
+
+Windows
+![windows_demo](https://storage.googleapis.com/zenn-user-upload/5c60d2fa6f80-20250305.png)
+ソースコードは以下
+https://github.com/yadokani389/tauri-rust-render
+
+## 前準備
+
+説明を分かりやすくするためにいくつか先に説明しておくべきものがあります。
+
+まずは[winit](https://github.com/rust-windowing/winit)。これはクロスプラットフォームのウィンドウ作成とイベントループのライブラリです。これを使うことで、OSに依存しない形でウィンドウを作成し、イベントを処理できます。
+Tauriの使用している[TAO](https://github.com/tauri-apps/tao)というライブラリはこのwinitのフォークです。
+Tauriは[WRY](https://github.com/tauri-apps/wry)というWebViewレンダリングライブラリも使っています。
+
+次に[raw-window-handle](https://github.com/rust-windowing/raw-window-handle)です。これはウィンドウハンドルを抽象化するためのライブラリです。これを使うことで、異なるプラットフォーム間でウィンドウハンドルを統一的に扱うことができます。
+このライブラリの`HasDisplayHandle`と`HasWindowHandle`というtraitがあれば[softbuffer](https://github.com/rust-windowing/softbuffer)や、[wgpu](https://github.com/gfx-rs/wgpu)などのライブラリを使うことで描画が可能になります。
+
+ほとんどのRustのGUIライブラリがこれらrust-windowingのcrateに依存している気がします。
+
+## 本題
+
+`AppHandle`の`get_webview_window`というメソッドで`WebviewWindow`というものを得ることができます。(`App`でもいいです)
+この`WebviewWindow`は`HasDisplayHandle`と`HasWindowHandle`を実装しています。 (うれしい)
+
+Windows（おそらくmacOSも）では、まだ描画できません。`src-tauri/tauri.conf.json`を編集し、`app->windows`の要素に`"transparent": true`を追加します。
+次のCSSをグローバルに適用します。
+
+```css
+* {
+  background-color: transparent !important;
+}
+```
+
+このCSSで背景を透明にします。
+
+次に、`cargo add softbuffer`で`softbuffer`を追加し、描画を試します。
+
+```rust
+tauri::Builder::default()
+    .setup(|app| {
+        let window = tauri::Manager::get_webview_window(app, "main").unwrap();
+        let window = std::sync::Arc::new(window);
+        tauri::async_runtime::spawn(async move {
+            let context = softbuffer::Context::new(window.clone()).unwrap();
+            let mut surface = softbuffer::Surface::new(&context, window.clone()).unwrap();
+            let (width, height) = {
+                let size = window.inner_size().unwrap();
+                (size.width, size.height)
+            };
+            surface
+                .resize(
+                    std::num::NonZeroU32::new(width).unwrap(),
+                    std::num::NonZeroU32::new(height).unwrap(),
+                )
+                .unwrap();
+
+            loop {
+                let mut buffer = surface.buffer_mut().unwrap();
+                for index in 0..(width * height) {
+                    let x = index % width;
+
+                    let r = 0;
+                    let g = 0;
+                    let b = 255 * x / width;
+                    let a = 255;
+
+                    buffer[index as usize] = b | (g << 8) | (r << 16) | (a << 24);
+                }
+                buffer.present().unwrap();
+            }
+        });
+        Ok(())
+    })
+    .run(tauri::generate_context!())
+    .expect("error while running tauri application");
+```
+
+Windowsでは上の画像のようになったはずです。
+Linuxでは背景が透けず、画面いっぱいが青いグラデーションで埋まったのではないでしょうか。
+
+## 問題点
+
+### 動作が違う
+
+Linuxではフロントを上書きして描画されていて僕の環境だとウィンドウに触れたりするとチカチカしていてたまにフロントの画面が見えます。
+ですが、Windows環境だとそういったこともなく、しかも背景部分のみに描画されています、つまりフロントの下に描画されているのです。
+羨しいです。
+
+<details>
+<summary>Waylandが影響している可能性があります。</summary>
+
+普段はHyprland（Wayland compositor）を使っています。GNOME（Xorg）ではチカチカするものの、背景が透明になるだけで、フロントの画面は表示されませんでした。
+とはいえ、フロントの上に描画されるため、影響はあまりありません。
+
+</details>
+
+### Linuxで綺麗に表示したい
+
+普通にウィンドウを作ってしまうとWebViewが邪魔してきて綺麗に表示できないです。
+なので`AppHandle`の`create_tao_window`というメソッドでTAOだけのウィンドウを作ります。
+`cargo add tao`でTAOを追加してください。
+
+```rust
+let window = handle
+    .create_tao_window(|| {
+        ("display".to_string(), {
+            tao::window::WindowBuilder::new()
+                .with_title("New Window")
+                .with_inner_size(tao::dpi::LogicalSize::new(400, 320))
+        })
+    })
+    .unwrap()
+    .upgrade()
+    .unwrap();
+```
+
+以降の処理では、`WebviewWindow`の代わりにこのウィンドウを使います。
+`WebviewWindow`と`Window`では型が異なり、`inner_size`の戻り値も`Result`ではありません。呼び出し箇所も戻り値に合わせて修正します。
+この方法ではウィンドウが複数になりますが、LinuxでもRustから描画できました。
+
+> 現状のコードでは、ウィンドウを閉じられない可能性があります。
+> `send_tao_window_event`に`AddEventListener`を設定すれば閉じられると考えていますが、実装方法は分かりませんでした。
+> メインウィンドウを閉じれば、TAOウィンドウも消えるはずです。
+
+## おわり
+
+このあたりはドキュメントがなく、取り組む人も少なすぎて、全体像をつかめません。
+Rustの知識が足りず、コードに不自然な箇所がある可能性もあります。
+気づいた点があれば、ぜひお寄せください。

@@ -55,7 +55,7 @@ export default defineConfig({
           {
             cache: true,
             noFavicon: false,
-            noThumbnail: true,
+            noThumbnail: false,
             shortenUrl: true,
           },
         ],

@@ -6,23 +6,11 @@ export const buildOgPages = async (): Promise<Record<string, OGPage>> => {
   const works = await getCollection("works");
 
   const blogPages: Record<string, OGPage> = Object.fromEntries(
-    blogPosts.map((post) => [
-      `blog/${post.id}`,
-      {
-        title: post.data.title,
-        description: post.data.description,
-      },
-    ]),
+    blogPosts.map((post) => [`blog/${post.id}`, { title: post.data.title }]),
   );
 
   const workPages: Record<string, OGPage> = Object.fromEntries(
-    works.map((work) => [
-      `works/${work.id}`,
-      {
-        title: work.data.title,
-        description: work.data.description,
-      },
-    ]),
+    works.map((work) => [`works/${work.id}`, { title: work.data.title }]),
   );
 
   return {

@@ -13,4 +13,3 @@ export const bgGradient: [number, number, number][] = [
 ];
 
 export const titleColor: [number, number, number] = [30, 72, 66];
-export const descriptionColor: [number, number, number] = [100, 122, 112];

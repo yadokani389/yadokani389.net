@@ -35,7 +35,7 @@ try {
       () =>
         globalThis.document.fonts.check("500 144px Fredoka") &&
         globalThis.document.fonts.check(
-          '500 36px "M PLUS Rounded 1c"',
+          '500 34px "M PLUS Rounded 1c"',
           "制作物と日々の記録",
         ),
     ),
@@ -48,6 +48,12 @@ try {
     }),
     "The wordmark must fit inside the image",
   );
+  const title = await page.locator("main").boundingBox();
+  const lockup = await page.locator(".lockup").boundingBox();
+  assert(
+    lockup.y >= title.y + title.height,
+    "The identity must sit below the title",
+  );
   assert.deepEqual(errors, []);
   await mkdir(new URL("../public/images/", import.meta.url), {
     recursive: true,
@@ -59,15 +65,21 @@ try {
     const screenshot = join(temporary, `${view}.png`);
     const output = fileURLToPath(new URL(path, import.meta.url));
     await page.screenshot({ path: screenshot });
-    const paper = await sharp(screenshot)
-      .extract({ left: 1000, top: 405, width: 1, height: 1 })
+    const disc = await page.locator(".disc").boundingBox();
+    const blend = await sharp(screenshot)
+      .extract({
+        left: Math.round(disc.x + disc.width / 8),
+        top: Math.round(disc.y + disc.height / 2),
+        width: 1,
+        height: 1,
+      })
       .removeAlpha()
       .raw()
       .toBuffer();
     assert.deepEqual(
-      [...paper],
-      [255, 253, 245],
-      "The mascot must blend into the paper",
+      [...blend],
+      [232, 240, 226],
+      "The mascot must blend into its disc",
     );
     await sharp(screenshot).png({ compressionLevel: 9 }).toFile(output);
     const metadata = await sharp(output).metadata();
@@ -75,6 +87,7 @@ try {
     assert.equal(metadata.height, 630);
     assert.equal(metadata.format, "png");
     assert.equal(await page.locator("main").isVisible(), view === "default");
+    assert.equal(await page.locator(".lockup").isVisible(), true);
     globalThis.console.log(`OG image: ${output}`);
   }
 } finally {

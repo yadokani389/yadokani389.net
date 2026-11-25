@@ -232,16 +232,16 @@
   }
 
   .prose .remark-link-card-plus__container {
-    @apply w-full max-w-full;
     margin: 0.875rem 0;
   }
 
   .prose .remark-link-card-plus__card {
-    @apply flex w-full max-w-full flex-col gap-1.5 overflow-hidden rounded-md border border-sand-200 bg-sand-50 px-3.5 py-2.5 !no-underline transition hover:border-sage-500/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500/40;
+    @apply flex w-full max-w-full flex-col items-stretch overflow-hidden rounded-[0.625rem] border border-sand-200 bg-sand-50 font-normal tracking-normal !no-underline transition-colors hover:border-sage-500/60 sm:flex-row;
+    font-family: ui-sans-serif, system-ui, sans-serif;
   }
 
   .prose .remark-link-card-plus__main {
-    @apply flex min-w-0 w-full flex-col gap-1.5;
+    @apply flex min-w-0 w-full flex-1 flex-col justify-center gap-1.5 px-[0.9375rem] py-2.5 sm:px-5 sm:py-[0.8125rem];
   }
 
   .prose .remark-link-card-plus__content {
@@ -249,33 +249,47 @@
   }
 
   .prose .remark-link-card-plus__title {
-    @apply m-0 text-xl font-semibold leading-tight text-ink-900 no-underline;
+    @apply m-0 text-[0.9375rem] font-bold leading-normal text-ink-900 no-underline sm:text-[1.03125rem];
     display: -webkit-box;
     overflow: hidden;
+    overflow-wrap: anywhere;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
 
   .prose .remark-link-card-plus__description {
-    @apply m-0 text-[0.98rem] leading-snug text-ink-600 no-underline;
+    @apply m-0 text-xs leading-normal text-ink-600 no-underline sm:text-[0.8125rem];
     display: -webkit-box;
     overflow: hidden;
+    overflow-wrap: anywhere;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
+  }
+
+  .prose .remark-link-card-plus__description:empty {
+    display: none;
   }
 
   .prose .remark-link-card-plus__meta {
-    @apply flex items-center gap-2 text-[0.98rem] font-medium text-ink-500;
+    @apply flex min-w-0 items-center gap-1.5 text-xs text-ink-500 sm:text-[0.8125rem];
+  }
+
+  .prose .remark-link-card-plus__thumbnail {
+    @apply flex w-full shrink-0 bg-sand-100 sm:w-auto sm:max-w-[min(14.375rem,40%)];
+  }
+
+  .prose .remark-link-card-plus__image {
+    @apply m-0 block h-auto w-full max-w-full object-cover object-center sm:h-[7.5rem] sm:min-h-full sm:w-auto;
+    margin: 0 !important;
   }
 
   .prose .remark-link-card-plus__favicon {
-    @apply m-0 h-[18px] w-[18px] shrink-0 self-center rounded-sm border border-sand-200;
+    @apply m-0 size-3.5 shrink-0 rounded-none border-0;
     margin: 0 !important;
-    margin-block: 0 !important;
   }
 
   .prose .remark-link-card-plus__url {
-    @apply truncate no-underline;
+    @apply min-w-0 truncate no-underline;
   }
 
   .prose .remark-link-card-plus__card:hover .remark-link-card-plus__title {
